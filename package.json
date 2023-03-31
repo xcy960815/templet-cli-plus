@@ -1,94 +1,96 @@
 {
-    "name": "templet-cli-plus",
-    "version": "0.0.1",
-    "description": "模板脚手架,内置各种vue模板、rollup-js、rollup-ts、rollup-vue-js、rollup-vue-ts、vscode-webview-ts构建模板，无需配置,一键配置使用",
-    "scripts": {
-        "dev": "NODE_ENV=development ENV=daily rollup -c -w",
-        "link": "npm link && npm link templet-cli-plus",
-        "build": "NODE_ENV=production ENV=prod rollup -c"
-    },
-    "bin": {
-        "temp": "./bin/index.cjs.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/xcy960815/templet-cli-plus.git"
-    },
-    "author": {
-        "name": "xcy960815",
-        "email": "18763006837@163.com"
-    },
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/xcy960815/templet-cli-plus/issues"
-    },
-    "engines": {
-        "node": ">=14.0.0"
-    },
-    "files": [
-        "bin/index.cjs.js",
-        "bin/template-list.json"
-    ],
-    "homepage": "https://github.com/xcy960815/templet-cli-plus#readme",
-    "devDependencies": {
-        "@babel/core": "^7.12.3",
-        "@microsoft/api-extractor": "^7.28.3",
-        "@rollup/plugin-commonjs": "^16.0.0",
-        "@rollup/plugin-json": "^6.0.0",
-        "@rollup/plugin-node-resolve": "^10.0.0",
-        "@rollup/plugin-replace": "^5.0.2",
-        "husky": "^8.0.3",
-        "prettier": "^2.8.7",
-        "pretty-quick": "^3.1.3",
-        "rollup": "^2.33.1",
-        "rollup-plugin-babel": "^4.4.0",
-        "rollup-plugin-delete": "^2.0.0",
-        "rollup-plugin-sourcemaps": "^0.6.3",
-        "rollup-plugin-terser": "^7.0.2",
-        "rollup-plugin-typescript2": "^0.30.0",
-        "single-line-log": "^1.1.2",
-        "tslib": "^2.0.3",
-        "typescript": "~4.5.5",
-        "vcm-cli": "^1.0.5"
-    },
-    "volta": {
-        "node": "14.21.3"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "npm run dev"
-        }
-    },
-    "peerDependencies": {
-        "chalk": "^4.1.2",
-        "cli-table3": "^0.6.3",
-        "commander": "^10.0.0",
-        "download-git-repo": "^3.0.2",
-        "from": "^0.1.7",
-        "import": "0.0.6",
-        "inquirer": "^8.1.2",
-        "ora": "^5.4.1",
-        "replace": "^1.2.2",
-        "request": "^2.88.2",
-        "semver": "^7.3.8",
-        "to-fast-properties": "^4.0.0",
-        "universalify": "^2.0.0",
-        "word-wrap": "^1.2.3"
-    },
-    "dependencies": {
-        "chalk": "^4.1.2",
-        "cli-table3": "^0.6.3",
-        "commander": "^10.0.0",
-        "download-git-repo": "^3.0.2",
-        "from": "^0.1.7",
-        "import": "0.0.6",
-        "inquirer": "^8.1.2",
-        "ora": "^5.4.1",
-        "replace": "^1.2.2",
-        "request": "^2.88.2",
-        "semver": "^7.3.8",
-        "to-fast-properties": "^4.0.0",
-        "universalify": "^2.0.0",
-        "word-wrap": "^1.2.3"
+  "name": "templet-cli-plus",
+  "version": "0.0.1",
+  "description": "模板脚手架,内置各种vue模板、rollup-js、rollup-ts、rollup-vue-js、rollup-vue-ts、vscode-webview-ts构建模板，无需配置,一键配置使用",
+  "scripts": {
+    "dev": "NODE_ENV=development ENV=daily rollup -c -w",
+    "link": "npm link && npm link templet-cli-plus",
+    "build": "NODE_ENV=production ENV=prod rollup -c"
+  },
+  "bin": {
+    "temp": "./bin/index.cjs.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xcy960815/templet-cli-plus.git"
+  },
+  "author": {
+    "name": "xcy960815",
+    "email": "18763006837@163.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xcy960815/templet-cli-plus/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "bin/index.cjs.js",
+    "bin/template-list.json"
+  ],
+  "homepage": "https://github.com/xcy960815/templet-cli-plus#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@microsoft/api-extractor": "^7.28.3",
+    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
+    "@rollup/plugin-replace": "^5.0.2",
+    "rollup": "^2.33.1",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "tslib": "^2.0.3",
+    "typescript": "~4.5.5",
+    "husky": "^1.3.1",
+    "prettier": "1.16.1",
+    "pretty-quick": "^1.8.0",
+    "vcm-cli": "^1.0.5"
+  },
+  "volta": {
+    "node": "14.21.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged",
+      "commit-msg": "vcm"
     }
+  },
+  "peerDependencies": {
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "commander": "^10.0.0",
+    "download-git-repo": "^3.0.2",
+    "from": "^0.1.7",
+    "import": "0.0.6",
+    "inquirer": "^8.1.2",
+    "ora": "^5.4.1",
+    "replace": "^1.2.2",
+    "request": "^2.88.2",
+    "semver": "^7.3.8",
+    "to-fast-properties": "^4.0.0",
+    "universalify": "^2.0.0",
+    "single-line-log": "^1.1.2",
+    "word-wrap": "^1.2.3"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "commander": "^10.0.0",
+    "download-git-repo": "^3.0.2",
+    "from": "^0.1.7",
+    "import": "0.0.6",
+    "inquirer": "^8.1.2",
+    "ora": "^5.4.1",
+    "replace": "^1.2.2",
+    "request": "^2.88.2",
+    "semver": "^7.3.8",
+    "to-fast-properties": "^4.0.0",
+    "universalify": "^2.0.0",
+    "single-line-log": "^1.1.2",
+    "word-wrap": "^1.2.3"
+  }
 }

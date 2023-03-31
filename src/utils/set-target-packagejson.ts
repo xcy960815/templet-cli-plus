@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-
+import ora from 'ora';
+import { readLocalPackageJson } from './read-local-packagejson';
 interface ITargetPackageJson {
   name: string;
   version: string;
@@ -77,26 +78,34 @@ interface ITargetPackageJson {
  * @returns {void}
  */
 const setTargetPackageJson = (projectName: string, answers: { [key: string]: string }) => {
-  // 创建的项目的 package.json 的路径
-  console.log(`${chalk.yellowBright('===> 开始读取package.json文件\n')}`);
-  const targetPackageJsonPath = path.resolve(process.cwd(), `${projectName}/package.json`);
-  const targetPackageJsonBuffer: Buffer = fs.readFileSync(targetPackageJsonPath);
-  const targetPackageContent: ITargetPackageJson = JSON.parse(targetPackageJsonBuffer.toString());
-  console.log(`${chalk.greenBright('===> package.json文件读取完毕\n')}`);
-  console.log(`${chalk.yellowBright('===> 开始修改package.json文件')}\n`);
-  Object.keys(answers).forEach((answer: string) => {
-    const answerValue: string = answers[answer];
-    const hasKey: boolean = targetPackageContent.hasOwnProperty(answer);
-    if (hasKey) {
-      targetPackageContent[answer] = answerValue ? answerValue : '';
-    } else if (answer === 'projectName') {
-      targetPackageContent.name = answerValue;
-    }
-  });
-  fs.writeFileSync(targetPackageJsonPath, JSON.stringify(targetPackageContent, null, 4));
-  console.log(`${chalk.greenBright('===> 修改package.json文件完毕')}\n`);
-  // 提示项目创建成功
-  console.log(chalk.green(`【 templet-cli 】创建项目完成\n`));
+  const spinner = ora(chalk.greenBright('===> 开始修改package.json文件...'));
+  spinner.start();
+  try {
+    // 创建的项目的 package.json 的路径
+    const targetPackageJsonPath = path.resolve(process.cwd(), `${projectName}/package.json`);
+    const targetPackageJsonBuffer: Buffer = fs.readFileSync(targetPackageJsonPath);
+    const targetPackageContent: ITargetPackageJson = JSON.parse(targetPackageJsonBuffer.toString());
+    Object.keys(answers).forEach((answer: string) => {
+      const answerValue: string = answers[answer];
+      const hasKey: boolean = targetPackageContent.hasOwnProperty(answer);
+      if (hasKey) {
+        targetPackageContent[answer] = answerValue ? answerValue : '';
+      } else if (answer === 'projectName') {
+        targetPackageContent.name = answerValue;
+      }
+    });
+    fs.writeFileSync(targetPackageJsonPath, JSON.stringify(targetPackageContent, null, 4));
+    spinner.succeed(`${chalk.greenBright('===> 修改package.json文件完毕')}\n`);
+    const { name } = readLocalPackageJson(['name']);
+    // 提示项目创建成功
+    console.log(
+      `${chalk.green(`【 ${projectName} 】`)} 由 ${chalk.yellowBright(
+        `【 ${name} 】创建项目完成\n`,
+      )}`,
+    );
+  } catch (e) {
+    spinner.fail(chalk.redBright('===> 修改package.json文件失败'));
+  }
 };
 
 export { setTargetPackageJson };

@@ -34,6 +34,7 @@ export default {
         'cli-table3': 'cli-table3',
         universalify: 'universalify',
         'download-git-repo': 'download-git-repo',
+        execa: 'execa',
       },
     },
   ],
@@ -92,5 +93,6 @@ export default {
     'cli-table3',
     'universalify',
     'download-git-repo',
+    'execa',
   ].concat(Object.keys(pkg.peerDependencies || {})),
 };

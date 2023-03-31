@@ -20,7 +20,7 @@ const installDependencies = async (templateName: string, projectName: string): P
       cwd: rootPath,
     });
 
-    console.info(chalk.greenBright('   🎉依赖包安装完成\n'));
+    console.info(chalk.greenBright('🎉依赖包安装完成\n'));
     // 输出 cd 指令
     console.info(`   ${chalk.redBright('cd')} ${chalk.yellowBright(projectName)}\n`);
     // 输出 启动 指令

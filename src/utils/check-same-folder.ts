@@ -3,33 +3,29 @@ import fs from 'fs';
 import { initQuestions } from '../questions/init-questions';
 import { deleteFolder } from './delete-folder';
 import chalk from 'chalk';
+import ora from 'ora';
 
 /**
  * @desc 检查当前路径下面是否存在跟项目重名的文件夹
  * @param {string} projectName
  * @returns {Promise} 返回项目名称
  */
-const checkSameFolder = async function (projectName: string): Promise<string> {
+const checkSameFolder = async function(projectName: string): Promise<string> {
   // 目录列表
   const dirList = fs.readdirSync('./');
   // 是否存在相同的项目名称
-  const hasSameFolder = dirList.some((name) => name === projectName);
+  const hasSameFolder = dirList.some(name => name === projectName);
   if (hasSameFolder) {
     // 空一行
     console.log('');
     // 如果有相同的文件夹名称 询问用户
     const answer = await initQuestions(['deleteFolder']);
     if (answer.deleteFolder === 'delete') {
-      const folderPath = path.resolve(process.cwd(), projectName);
-      console.log('folderPath', folderPath);
-
-      console.log(`\n${chalk.green('===> 开始删除重复文件')}\n`);
-      // 删除文件夹
-      await deleteFolder(folderPath);
-      console.log(chalk.green('===> 重复文件删除成功\n'));
+      await deleteFolder(path.resolve(process.cwd(), projectName));
     } else if (answer.deleteFolder === 'rename') {
+      console.log(`\n${chalk.green('===> 开始重命名文件')}\n`);
       projectName = timeSuffix(projectName);
-      console.info(`   随机文件后缀已生成，新的项目名称为 ==> ${chalk.greenBright(projectName)}`);
+      console.info(`已随机文件后缀已生成，新的项目名称为【 ${chalk.greenBright(projectName)} 】\n`);
     } else {
       // 放弃创建
       console.log(chalk.redBright('已放弃创建'));
@@ -39,7 +35,7 @@ const checkSameFolder = async function (projectName: string): Promise<string> {
   return projectName;
 };
 
-const timeSuffix = function (projectName: string): string {
+const timeSuffix = function(projectName: string): string {
   const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
