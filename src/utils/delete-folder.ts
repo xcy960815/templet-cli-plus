@@ -2,16 +2,6 @@ import fs from 'fs';
 import chalk from 'chalk';
 import ora from 'ora';
 
-//
-//       try {
-//         // 删除文件夹
-
-//         spinner.succeed(chalk.green('===> 重复文件删除完毕\n'));
-//       } catch (error: any) {
-//         spinner.fail(chalk.red(`===> 删除重复文件失败, 失败原因: ${chalk.red(error.message)}`));
-//         process.exit(1);
-//       }
-
 /**
  * @desc 删除文件
  * @param {string} filePath
