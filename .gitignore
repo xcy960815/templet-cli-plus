@@ -1,0 +1,7 @@
+node_modules/
+public/
+dist/
+.idea/
+.Ds_Store
+bin/
+temp/

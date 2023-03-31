@@ -1,0 +1,15 @@
+node_modules/
+public/
+example/
+.idea/
+tsconfig.json   
+api-extractor.json
+rollup.config.js  
+shims-vue.d.ts    
+.prettierrc
+.prettierrc.js
+src
+vue.config.js    
+README.md
+images
+.Ds_Store
