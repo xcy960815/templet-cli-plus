@@ -3,46 +3,50 @@ import chalk from 'chalk';
 import ora from 'ora';
 
 /**
- * @desc 删除文件
+ * @desc 删除文件 先删除文件夹下的文件 再删除文件夹
  * @param {string} filePath
  * @returns {boolean} 删除成功返回true 否则返回false
  */
-const handleDeleteFolder = function(filePath: string): void {
-  if (fs.existsSync(filePath)) {
-    const files = fs.readdirSync(filePath);
+const handleDeleteFolder = function(folderPath: fs.PathLike): void {
+  const hasFolder = fs.existsSync(folderPath);
+  if (hasFolder) {
+    // 读取文件夹下面的文件
+    const files = fs.readdirSync(folderPath);
     files.forEach(file => {
-      const nextFilePath = `${filePath}/${file}`;
-      const states = fs.statSync(nextFilePath);
-      if (states.isDirectory()) {
+      const nextFilePath = `${folderPath}/${file}`;
+
+      const stats = fs.statSync(nextFilePath);
+      // 获取到的文件或目录的信息对象 stats 是否表示一个目录。
+      const isFolder = stats.isDirectory();
+      if (isFolder) {
         handleDeleteFolder(nextFilePath);
       } else {
         try {
+          // 删除文件
           fs.unlinkSync(nextFilePath);
         } catch (error) {
-          console.log(chalk.redBright(`无法删除文件 ${nextFilePath}: ${error.message}`));
+          console.log(chalk.redBright(`无法删除文件 ${nextFilePath}`));
         }
       }
     });
     try {
-      fs.rmdirSync(filePath);
+      // 删除文件夹
+      fs.rmdirSync(folderPath);
     } catch (error) {
-      console.log(chalk.redBright(`无法删除文件夹 ${filePath}: ${error.message}`));
+      console.log(chalk.redBright(`无法删除文件夹 ${folderPath}`));
     }
   }
 };
 
-const deleteFolder = function(filePath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const spinner = ora('===> 开始删除重复文件').start();
-    try {
-      handleDeleteFolder(filePath);
-      spinner.succeed(chalk.green('===> 重复文件删除完毕\n'));
-      resolve();
-    } catch (error) {
-      spinner.fail(chalk.red(`===> 删除重复文件失败, 失败原因: ${chalk.red(error.message)}`));
-      process.exit(1);
-    }
-  });
+const deleteFolder = function(folderPath: fs.PathLike): void {
+  const spinner = ora('===> 开始删除重复文件').start();
+  try {
+    handleDeleteFolder(folderPath);
+    spinner.succeed(chalk.green('===> 重复文件删除完毕\n'));
+  } catch (error) {
+    spinner.fail(chalk.red(`===> 删除重复文件失败`));
+    process.exit(1);
+  }
 };
 
 export { deleteFolder };

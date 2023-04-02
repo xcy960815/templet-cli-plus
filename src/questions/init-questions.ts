@@ -6,12 +6,10 @@ import { authorQuestion } from '@/questions/author-question';
 import { projectNameQuestion } from '@/questions/project-name-question';
 import { deleteFolderQuestion } from '@/questions/delete-folder-question';
 import { updateCliVersionQuestion } from '@/questions/update-cli-version-question';
-
-export type QuestionsMap = {
-  [key in keyof typeof questionsMap]?: Function;
-};
-
-const questionsMap = {
+import { downloadSourceQuestion } from '@/questions/download-source-question';
+export type QuestionsMap = { [key in keyof typeof questionsMap]?: Function };
+export type QuestionsMapKeys = keyof QuestionsMap;
+export const questionsMap = {
   version: versionQuestion,
   description: descriptionQuestion,
   templateName: templateNameQuestion,
@@ -19,14 +17,15 @@ const questionsMap = {
   projectName: projectNameQuestion,
   deleteFolder: deleteFolderQuestion,
   updateCliVersion: updateCliVersionQuestion,
+  downloadSource: downloadSourceQuestion,
 };
 
-const initQuestions = async function <K extends keyof QuestionsMap>(
+const initQuestions = async function<K extends keyof QuestionsMap>(
   questions: Array<K>,
 ): Promise<{ [P in K]: string }> {
   const answers = await inquirer.prompt(
     await Promise.all(
-      questions.map((question) => {
+      questions.map(question => {
         return questionsMap[question]();
       }),
     ),

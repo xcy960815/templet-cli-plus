@@ -9,7 +9,6 @@ import { setTargetPackageJson } from './utils/set-target-packagejson';
 import { installDependencies } from './utils/install-dependencies';
 import chalk from 'chalk';
 import { checkCliVersion } from './utils/check-cli-version';
-// const checkInternet = require('./utils/check-internet');
 import { checkSameFolder } from './utils/check-same-folder';
 import { getTemplateList } from './utils/get-template-list';
 import { readLocalPackageJson } from './utils/read-local-packagejson';
@@ -18,28 +17,32 @@ const { bin, version } = readLocalPackageJson(['bin', 'version']);
 const cliShell = Object.keys(bin || {})[0];
 program.version(version!, '-v,-V,--version');
 
-/**
- * @desc 初始化指定版本的指令
- */
-program
-  .command('create <templateName> <projectName>')
-  .description(chalk.yellowBright('通过指定模版创建项目'))
-  .action(async (templateName: string, projectName: string) => {
-    // 检查网络
-    // await checkInternet();
-    // 检查版本号
-    await checkCliVersion();
-    // 收集用户配置
-    const answers = await initQuestions(['projectName', 'version', 'description', 'author']);
-    // 检查文件名称
-    const newProjectName = await checkSameFolder(projectName);
-    // 下载模板
-    await downloadTemplate(templateName, newProjectName);
-    // 现在成功之后 修改package.json 内容
-    await setTargetPackageJson(newProjectName, answers);
-    // 安装依赖包
-    installDependencies(templateName, newProjectName);
-  });
+// /**
+//  * @desc 初始化指定版本的指令
+//  */
+// program
+//   .command('create <templateName> <projectName>')
+//   .description(chalk.yellowBright('通过指定模版创建项目'))
+//   .action(async (templateName: string, projectName: string) => {
+//     // 检查版本号
+//     await checkCliVersion();
+//     // 收集用户配置
+//     const answers = await initQuestions([
+//       'projectName',
+//       'version',
+//       'description',
+//       'author',
+//       'downloadSource',
+//     ]);
+//     // 检查文件名称
+//     const newProjectName = await checkSameFolder(projectName);
+//     // 下载模板
+//     await downloadTemplate(templateName, answers.downloadSource, newProjectName);
+//     // // 现在成功之后 修改package.json 内容
+//     // await setTargetPackageJson(newProjectName, answers);
+//     // // 安装依赖包
+//     // installDependencies(templateName, newProjectName);
+//   });
 
 /**
  * @desc 用户自己选择版本
@@ -48,8 +51,6 @@ program
   .command('init')
   .description(chalk.greenBright('初始化模板'))
   .action(async () => {
-    // 检查网络
-    // await checkInternet();
     // 检查版本号
     await checkCliVersion();
     // 收集用户信息
@@ -59,16 +60,17 @@ program
       'version',
       'description',
       'author',
+      'downloadSource',
     ]);
-    const { templateName, projectName } = answers;
     // 检查文件
-    const newProjectName = await checkSameFolder(projectName);
+    const newProjectName = await checkSameFolder(answers.projectName);
     // 下载模板
-    await downloadTemplate(templateName, newProjectName);
+    await downloadTemplate(answers.templateName, answers.downloadSource, newProjectName);
+
     // 现在成功之后 修改package.json 内容
     await setTargetPackageJson(newProjectName, answers);
-    // 安装依赖包
-    installDependencies(templateName, newProjectName);
+    // // 安装依赖包
+    // installDependencies(templateName, newProjectName);
   });
 
 /**

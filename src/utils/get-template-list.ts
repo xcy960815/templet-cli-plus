@@ -16,16 +16,16 @@ interface ITemplate {
  */
 const getTemplateList = async function(): Promise<Record<string, ITemplate>> {
   const isDev = process.env.NODE_ENV === 'development';
-  const spinner = ora(chalk.greenBright('正在查询模板相关配置...'));
-  spinner.start();
-  const responseFilePath = path.join(__dirname, 'template-list.json');
+  const spinner = ora(chalk.greenBright('正在查询模板相关配置...')).start();
+
+  const templateListFilePath = path.join(__dirname, 'template-list.json');
   const cacheTime = isDev ? 10 * 1000 : 24 * 60 * 60 * 1000; // 开发环境缓存有效期为10秒 线上环境有效期为1天
   try {
-    const cacheStat = fs.statSync(responseFilePath);
+    const templateListFileStat = fs.statSync(templateListFilePath);
     const now = new Date().getTime();
-    if (now - cacheStat.mtimeMs < cacheTime) {
+    if (now - templateListFileStat.mtimeMs < cacheTime) {
       // 缓存未过期，直接读取文件中的数据
-      const data = fs.readFileSync(responseFilePath, 'utf-8');
+      const data = fs.readFileSync(templateListFilePath, 'utf-8');
       spinner.succeed(chalk.greenBright('🎉 模板相关配置查询完成（使用缓存数据）\n'));
       return JSON.parse(data);
     }
@@ -47,7 +47,7 @@ const getTemplateList = async function(): Promise<Record<string, ITemplate>> {
 
   spinner.succeed(chalk.greenBright('🎉 模板相关配置查询完成（请求最新数据）\n'));
 
-  fs.writeFileSync(responseFilePath, result.body);
+  fs.writeFileSync(templateListFilePath, result.body);
 
   return JSON.parse(result.body);
 };

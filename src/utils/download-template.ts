@@ -1,17 +1,22 @@
 import { promisify } from 'util';
-import { getTemplateList } from './get-template-list';
+import downloadGitRepo from 'download-git-repo';
 import chalk from 'chalk';
 import ora from 'ora';
 import { printTemplateList } from './print-template-list';
-import downloadGitRepo from 'download-git-repo';
-
+import { getTemplateList } from './get-template-list';
+// import {questionsMap} from "@/questions/init-questions"
+// import type {QuestionsMap}from "@/questions/init-questions"
 /**
  * @desc 下载github的模板
  * @param {string} templateName 模板名称
  * @param {string} projectName 项目名称
  * @returns {Promise<void>}
  */
-const downloadTemplate = async function (templateName: string, projectName: string): Promise<void> {
+const downloadTemplate = async function(
+  templateName: string,
+  downloadSource: string,
+  projectName: string,
+): Promise<void> {
   const templateList = await getTemplateList();
   // 判断模板是否存在
   if (!templateList[templateName]) {
@@ -19,21 +24,16 @@ const downloadTemplate = async function (templateName: string, projectName: stri
     printTemplateList(templateList);
     process.exit(1);
   }
+  const spinner = ora(chalk.green('开始拉取模版...')).start();
   // 通过 templateName 获取下载地址
   const { downloadUrl } = templateList[templateName];
-
-  const spinner = ora(chalk.green('开始拉取模版...'));
   // 包装成一个promise方法.
   const downloadGitRepoPromise = promisify(downloadGitRepo);
-
   try {
-    // 下载模版
-    spinner.start();
     await downloadGitRepoPromise(`direct:${downloadUrl}`, projectName, { clone: true });
     spinner.succeed(chalk.green('===> 模版拉取完成\n'));
-  } catch (error: any) {
-    spinner.fail(chalk.red(`===> 模版拉取失败, 失败原因: ${chalk.red(error.message)}`));
-    // 退出node进程
+  } catch (error) {
+    spinner.fail(chalk.red(`===> 模版拉取失败\n`));
     process.exit(1);
   }
 };
