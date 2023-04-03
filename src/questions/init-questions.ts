@@ -7,8 +7,7 @@ import { projectNameQuestion } from '@/questions/project-name-question';
 import { deleteFolderQuestion } from '@/questions/delete-folder-question';
 import { updateCliVersionQuestion } from '@/questions/update-cli-version-question';
 import { downloadSourceQuestion } from '@/questions/download-source-question';
-export type QuestionsMap = { [key in keyof typeof questionsMap]?: Function };
-export type QuestionsMapKeys = keyof QuestionsMap;
+
 export const questionsMap = {
   version: versionQuestion,
   description: descriptionQuestion,
@@ -19,6 +18,8 @@ export const questionsMap = {
   updateCliVersion: updateCliVersionQuestion,
   downloadSource: downloadSourceQuestion,
 };
+
+export type QuestionsMap = { [key in keyof typeof questionsMap]?: Function };
 
 const initQuestions = async function<K extends keyof QuestionsMap>(
   questions: Array<K>,

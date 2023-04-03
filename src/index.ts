@@ -17,32 +17,32 @@ const { bin, version } = readLocalPackageJson(['bin', 'version']);
 const cliShell = Object.keys(bin || {})[0];
 program.version(version!, '-v,-V,--version');
 
-// /**
-//  * @desc 初始化指定版本的指令
-//  */
-// program
-//   .command('create <templateName> <projectName>')
-//   .description(chalk.yellowBright('通过指定模版创建项目'))
-//   .action(async (templateName: string, projectName: string) => {
-//     // 检查版本号
-//     await checkCliVersion();
-//     // 收集用户配置
-//     const answers = await initQuestions([
-//       'projectName',
-//       'version',
-//       'description',
-//       'author',
-//       'downloadSource',
-//     ]);
-//     // 检查文件名称
-//     const newProjectName = await checkSameFolder(projectName);
-//     // 下载模板
-//     await downloadTemplate(templateName, answers.downloadSource, newProjectName);
-//     // // 现在成功之后 修改package.json 内容
-//     // await setTargetPackageJson(newProjectName, answers);
-//     // // 安装依赖包
-//     // installDependencies(templateName, newProjectName);
-//   });
+/**
+ * @desc 初始化指定版本的指令
+ */
+program
+  .command('create <templateName> <projectName>')
+  .description(chalk.yellowBright('通过指定模版创建项目'))
+  .action(async (templateName: string, projectName: string) => {
+    // 检查版本号
+    await checkCliVersion();
+    // 收集用户配置
+    const answers = await initQuestions([
+      'projectName',
+      'version',
+      'description',
+      'author',
+      'downloadSource',
+    ]);
+    // 检查文件名称
+    const newProjectName = await checkSameFolder(projectName);
+    // 下载模板
+    await downloadTemplate(templateName, answers.downloadSource, newProjectName);
+    // 现在成功之后 修改package.json 内容
+    await setTargetPackageJson(newProjectName, answers);
+    // 安装依赖包
+    installDependencies(templateName, newProjectName);
+  });
 
 /**
  * @desc 用户自己选择版本
@@ -66,11 +66,10 @@ program
     const newProjectName = await checkSameFolder(answers.projectName);
     // 下载模板
     await downloadTemplate(answers.templateName, answers.downloadSource, newProjectName);
-
     // 现在成功之后 修改package.json 内容
     await setTargetPackageJson(newProjectName, answers);
-    // // 安装依赖包
-    // installDependencies(templateName, newProjectName);
+    // 安装依赖包
+    installDependencies(answers.templateName, newProjectName);
   });
 
 /**
@@ -82,7 +81,7 @@ program
   .action(async () => {
     // 检查版本号
     await checkCliVersion();
-    const templateList = await getTemplateList();
+    const templateList = await getTemplateList(true);
     printTemplateList(templateList);
   });
 

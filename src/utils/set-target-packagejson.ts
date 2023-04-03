@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
 import { readLocalPackageJson } from './read-local-packagejson';
+import { QuestionsMap } from '@/questions/init-questions';
 interface ITargetPackageJson {
   name: string;
   version: string;
@@ -70,21 +71,50 @@ interface ITargetPackageJson {
   };
   [key: string]: any;
 }
-
 /**
  * @desc 修改创建的项目的 package.json 文件
  * @param projectName
  * @param answers
  * @returns {void}
  */
-const setTargetPackageJson = (projectName: string, answers: { [key: string]: string }) => {
+// type IAnswers = {
+//   [key in keyof Exclude<
+//     keyof QuestionsMap,
+//     Exclude<keyof QuestionsMap, 'version' | 'description' | 'author'>
+//   >]: string
+// };
+
+// type IAnswers = {
+//   [key in keyof Exclude<
+//     keyof QuestionsMap,
+//     Exclude<keyof QuestionsMap, 'version' | 'description' | 'author'>
+//   >]: QuestionsMap[key] extends Object ? never : string
+// };
+
+// type IAnswers = {
+//   [key in keyof Exclude<
+//     keyof QuestionsMap,
+//     Exclude<keyof QuestionsMap, 'version' | 'description' | 'author'>
+//   >]: QuestionsMap[key] extends Function ? never : string
+// };
+
+type IAnswers = { [key in keyof QuestionsMap]: string };
+
+const setTargetPackageJson = (projectName: string, answers: IAnswers) => {
   const spinner = ora(chalk.greenBright('===> 开始修改package.json文件...'));
   spinner.start();
   try {
+    const { templateName } = answers;
     // 创建的项目的 package.json 的路径
     const targetPackageJsonPath = path.resolve(process.cwd(), `${projectName}/package.json`);
     const targetPackageJsonBuffer: Buffer = fs.readFileSync(targetPackageJsonPath);
-    const targetPackageContent: ITargetPackageJson = JSON.parse(targetPackageJsonBuffer.toString());
+    // 将 templateName 替换成 projectName
+    // 创建一个动态的正则
+    const replaceTemplateNameReg = new RegExp(templateName || '', 'g');
+    const targetPackageContentString = targetPackageJsonBuffer
+      .toString()
+      .replace(replaceTemplateNameReg, projectName || templateName || '');
+    const targetPackageContent: ITargetPackageJson = JSON.parse(targetPackageContentString);
     Object.keys(answers).forEach((answer: string) => {
       const answerValue: string = answers[answer];
       const hasKey: boolean = targetPackageContent.hasOwnProperty(answer);

@@ -4,8 +4,6 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { printTemplateList } from './print-template-list';
 import { getTemplateList } from './get-template-list';
-// import {questionsMap} from "@/questions/init-questions"
-// import type {QuestionsMap}from "@/questions/init-questions"
 /**
  * @desc 下载github的模板
  * @param {string} templateName 模板名称
