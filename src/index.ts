@@ -3,7 +3,7 @@ checkNodeVersion();
 import { Command } from 'commander';
 const program = new Command();
 import { initQuestions } from './questions/init-questions';
-import { printTemplateList } from './utils/print-template-list';
+import { download as downloadGitRepo } from '@/utils/download-git-repo';
 import { downloadTemplate } from './utils/download-template';
 import { setTargetPackageJson } from './utils/set-target-packagejson';
 import { installDependencies } from './utils/install-dependencies';
@@ -11,6 +11,7 @@ import chalk from 'chalk';
 import { checkCliVersion } from './utils/check-cli-version';
 import { checkSameFolder } from './utils/check-same-folder';
 import { getTemplateList } from './utils/get-template-list';
+import { printTemplateList } from './utils/print-template-list';
 import { readLocalPackageJson } from './utils/read-local-packagejson';
 const { bin, version } = readLocalPackageJson(['bin', 'version']);
 // // 获取当前的指令
@@ -80,9 +81,11 @@ program
   .description(chalk.redBright('查看所有模版列表'))
   .action(async () => {
     // 检查版本号
-    await checkCliVersion();
-    const templateList = await getTemplateList(true);
-    printTemplateList(templateList);
+    // await checkCliVersion();
+    // const templateList = await getTemplateList(true);
+    // printTemplateList(templateList);
+    const downloadUrl = 'github:https://github.com/xcy960815/vue3-vite-template.git#master';
+    await downloadGitRepo(downloadUrl, 'test');
   });
 
 /**

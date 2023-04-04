@@ -4,12 +4,12 @@ interface DownloadSourceQuestion {
   message: '请选择下载源';
   choices: Array<
     | {
-        name: 'github（代码最新，依赖宿主网络环境）';
-        value: 'github';
+        name: string;
+        value: string;
       }
     | {
-        name: 'gitee（网络最好，但是小概率不是最新代码）';
-        value: 'gitee';
+        name: string;
+        value: string;
       }
   >;
 }
@@ -19,7 +19,7 @@ interface DownloadSourceQuestion {
  * @returns {DownloadSourceQuestion}
  */
 
-const downloadSourceQuestion = function(): DownloadSourceQuestion {
+const downloadSourceQuestion = function (): DownloadSourceQuestion {
   return {
     type: 'list',
     name: 'downloadSource',
