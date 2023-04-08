@@ -50,7 +50,7 @@ export const replaceAddress = async function (newAddress: string): Promise<void>
         },
       );
       if (nowAddress) {
-        console.log(`${chalk.yellowBright('更新后地址')}`, `\n ${chalk.greenBright(nowAddress)}`);
+        console.log(`${chalk.yellowBright('更新后地址')}`, `\n${chalk.greenBright(nowAddress)}`);
         countInfo.success += 1;
       } else {
         countInfo.error += 1;
