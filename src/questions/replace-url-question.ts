@@ -11,13 +11,13 @@ export const replaceUrlQuestion = function (): IReplaceUrlQuestion {
   return {
     type: 'input',
     name: 'replaceUrl',
-    message: `请输入正确的url`,
-    validate: function (answer) {
+    message: chalk.redBright(`请输入正确的github远程地址`),
+    validate: function (input: string) {
       const urlReg = /^(https?:\/\/)?([\da-z\\.-]+)\.([a-z\\.]{2,6})([\/\w \\.-]*)*\/?$/;
-      if (urlReg.test(answer)) {
+      if (urlReg.test(input)) {
         return true;
       } else {
-        console.log(chalk.redBright(`请输入正确的url`));
+        console.log(chalk.redBright(`请输入正确的github远程地址`));
         return false;
       }
     },

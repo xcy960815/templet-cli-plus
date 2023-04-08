@@ -7,6 +7,7 @@ import { projectNameQuestion } from '@/questions/project-name-question';
 import { deleteFolderQuestion } from '@/questions/delete-folder-question';
 import { updateCliVersionQuestion } from '@/questions/update-cli-version-question';
 import { downloadSourceQuestion } from '@/questions/download-source-question';
+import { downloadTypeQuestion } from '@/questions/download-type-question';
 import { replaceUrlQuestion } from '@/questions/replace-url-question';
 
 export const questionsMap = {
@@ -19,6 +20,7 @@ export const questionsMap = {
   updateCliVersion: updateCliVersionQuestion,
   downloadSource: downloadSourceQuestion,
   replaceUrl: replaceUrlQuestion,
+  downloadType: downloadTypeQuestion,
 };
 
 export type QuestionsMap = { [key in keyof typeof questionsMap]?: Function };

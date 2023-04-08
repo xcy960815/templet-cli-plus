@@ -112,7 +112,7 @@ program
  */
 program
   .command('kill <port>')
-  .description(chalk.redBright('kill指令'))
+  .description(chalk.blueBright('kill指令'))
   .action(async (port) => {
     // 获取进程id
     const processOption = await getProcess(port);

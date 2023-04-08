@@ -19,7 +19,7 @@ interface DownloadTypeQuestion {
  * @returns {DownloadTypeQuestion}
  */
 
-const DownloadTypeQuestion = function (): DownloadTypeQuestion {
+export const downloadTypeQuestion = function (): DownloadTypeQuestion {
   return {
     type: 'list',
     name: 'downloadType',
@@ -36,5 +36,3 @@ const DownloadTypeQuestion = function (): DownloadTypeQuestion {
     ],
   };
 };
-
-export { DownloadTypeQuestion };
