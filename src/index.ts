@@ -1,20 +1,24 @@
-import { checkNodeVersion } from './utils/check-node-version';
+import { checkNodeVersion } from '@/utils/check-node-version';
 checkNodeVersion();
 import { Command } from 'commander';
 const program = new Command();
-import { initQuestions } from './questions/init-questions';
+import { initQuestions } from '@/questions/init-questions';
+import { checkReplaceUrl } from '@/utils/check-replace-url';
+import { replaceAddress } from '@/utils/replace-address';
+import { getProcess } from '@/utils/get-process';
+import { killProcess } from '@/utils/kill-process';
 import { download as downloadGitRepo } from '@/utils/download-git-repo';
-import { downloadTemplate } from './utils/download-template';
-import { setTargetPackageJson } from './utils/set-target-packagejson';
-import { installDependencies } from './utils/install-dependencies';
+import { downloadTemplate } from '@/utils/download-template';
+import { setTargetPackageJson } from '@/utils/set-target-packagejson';
+import { installDependencies } from '@/utils/install-dependencies';
 import chalk from 'chalk';
-import { checkCliVersion } from './utils/check-cli-version';
-import { checkSameFolder } from './utils/check-same-folder';
-import { getTemplateList } from './utils/get-template-list';
-import { printTemplateList } from './utils/print-template-list';
-import { readLocalPackageJson } from './utils/read-local-packagejson';
+import { checkCliVersion } from '@/utils/check-cli-version';
+import { checkSameFolder } from '@/utils/check-same-folder';
+import { getTemplateList } from '@/utils/get-template-list';
+import { printTemplateList } from '@/utils/print-template-list';
+import { readLocalPackageJson } from '@/utils/read-local-packagejson';
 const { bin, version } = readLocalPackageJson(['bin', 'version']);
-// // 获取当前的指令
+// 获取当前的指令
 const cliShell = Object.keys(bin || {})[0];
 program.version(version!, '-v,-V,--version');
 
@@ -81,13 +85,40 @@ program
   .description(chalk.redBright('查看所有模版列表'))
   .action(async () => {
     // 检查版本号
-    // await checkCliVersion();
-    // const templateList = await getTemplateList(true);
-    // printTemplateList(templateList);
-    const downloadUrl = 'github:https://github.com/xcy960815/vue3-vite-template.git#master';
-    await downloadGitRepo(downloadUrl, 'test');
+    await checkCliVersion();
+    const templateList = await getTemplateList(true);
+    printTemplateList(templateList);
+    // const downloadUrl = 'gitee:https://gitee.com/xuchongyu/rollup-ts-vue3.git';
+    // const downloadUrl = 'gitee:https://gitee.com/kimlimjustin/whatsapp-clone.git';
+    // await downloadGitRepo(downloadUrl, 'test', { clone: true });
   });
 
+/**
+ * @desc 替换仓库指令
+ */
+program
+  .command('replace <url>')
+  .description(chalk.redBright('替换仓库指令'))
+  .action(async (url: string) => {
+    // 检查cli版本
+    await checkCliVersion();
+    //检查url是否合法
+    const newReplaceUrl = await checkReplaceUrl(url);
+    //改变地址
+    await replaceAddress(newReplaceUrl);
+  });
+/**
+ * @desc kill指令
+ */
+program
+  .command('kill <port>')
+  .description(chalk.redBright('kill指令'))
+  .action(async (port) => {
+    // 获取进程id
+    const processOption = await getProcess(port);
+    // 杀死进程
+    await killProcess(processOption);
+  });
 /**
  * @desc 脚手架更新指令
  * @returns {String}
@@ -120,6 +151,15 @@ program
         '指定模板名称创建项目',
       )}`,
     );
+    console.log(
+      `${chalk.greenBright(`${cliShell} replace <仓库地址>`)} : ${chalk.greenBright(
+        '替换仓库地址',
+      )}`,
+    );
+    console.log(
+      `${chalk.bgRed(`${cliShell} kill <端口号>`)} : ${chalk.bgRed('杀死指定端口号的进程')}`,
+    );
+    console.log(`${chalk.bgYellow(`${cliShell} update`)} : ${chalk.bgYellow('脚手架更新指令')}`);
   });
 
 program.parse(process.argv);

@@ -31,28 +31,25 @@ const download = async (
 ): Promise<void> => {
   const clone = options && options.clone ? options.clone : false;
   const repositoryOptions: IRepositoryOptions = getRepositoryOptions(repositoryPath);
-
   const url = repositoryOptions.url || getUrl(repositoryOptions, clone);
   console.log('url', url);
 
   const shallow = repositoryOptions.checkout === 'master';
   if (clone) {
-    const result = await gitclone(url, dest, { checkout: repositoryOptions.checkout, shallow });
+    const result = await gitclone(url, dest, {
+      checkout: repositoryOptions.checkout,
+      shallow,
+    }).catch((error) => error);
     console.log(result);
   } else {
-    console.log('downloadUrl');
-
-    await downloadUrl(url, dest, {
+    console.log('进入到downloadUrl中...');
+    const result = await await downloadUrl(url, dest, {
       extract: true,
       strip: 1,
       mode: '666',
       headers: { accept: 'application/zip' },
-    }).catch((err) => {
-      console.log(err);
-      // rm(dest, (err) => {
-      //   if (err) throw err;
-      // });
-    });
+    }).catch((error) => error);
+    console.log('result', result);
   }
 };
 

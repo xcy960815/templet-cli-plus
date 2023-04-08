@@ -7,6 +7,7 @@ import { projectNameQuestion } from '@/questions/project-name-question';
 import { deleteFolderQuestion } from '@/questions/delete-folder-question';
 import { updateCliVersionQuestion } from '@/questions/update-cli-version-question';
 import { downloadSourceQuestion } from '@/questions/download-source-question';
+import { replaceUrlQuestion } from '@/questions/replace-url-question';
 
 export const questionsMap = {
   version: versionQuestion,
@@ -17,16 +18,17 @@ export const questionsMap = {
   deleteFolder: deleteFolderQuestion,
   updateCliVersion: updateCliVersionQuestion,
   downloadSource: downloadSourceQuestion,
+  replaceUrl: replaceUrlQuestion,
 };
 
 export type QuestionsMap = { [key in keyof typeof questionsMap]?: Function };
 
-const initQuestions = async function<K extends keyof QuestionsMap>(
+const initQuestions = async function <K extends keyof QuestionsMap>(
   questions: Array<K>,
 ): Promise<{ [P in K]: string }> {
   const answers = await inquirer.prompt(
     await Promise.all(
-      questions.map(question => {
+      questions.map((question) => {
         return questionsMap[question]();
       }),
     ),
