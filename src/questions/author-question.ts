@@ -1,5 +1,4 @@
-import { getUserInfo } from '../utils/get-user-info';
-
+import os from 'os';
 interface IAuthorQuestion {
   type: 'input';
   name: 'author';
@@ -11,9 +10,9 @@ interface IAuthorQuestion {
  * @desc 作者问题
  * @returns {IAuthorQuestion}
  */
-const authorQuestion = function (): IAuthorQuestion {
+export const authorQuestion = function (): IAuthorQuestion {
   // 获取当前系统用户名称
-  const { username } = getUserInfo();
+  const { username } = os.userInfo();
   return {
     type: 'input',
     name: 'author',
@@ -21,5 +20,3 @@ const authorQuestion = function (): IAuthorQuestion {
     message: '请输入项目作者',
   };
 };
-
-export { authorQuestion };
