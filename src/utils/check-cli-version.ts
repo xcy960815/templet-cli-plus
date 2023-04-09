@@ -21,7 +21,7 @@ const checkCliVersion = async (): Promise<void> => {
     url: `https://registry.npmmirror.com/${name}`, // 使用淘宝源镜像
     timeout: 1000,
     // agent,
-  }).catch(error => {
+  }).catch((error) => {
     // 当错误类型不为超时错误时，打印错误信息
     if (error.code !== 'ETIMEDOUT') {
       spinner.fail(chalk.red('脚手架版本检查失败请重试一次\n'));

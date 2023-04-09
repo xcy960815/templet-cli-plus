@@ -1,6 +1,6 @@
 import semver from 'semver';
 import chalk from 'chalk';
-import { readLocalPackageJson } from './read-local-packagejson';
+import { readLocalPackageJson } from '@/utils/read-local-packagejson';
 // 获取package.json的内容
 const { engines, name } = readLocalPackageJson(['engines', 'name']);
 
@@ -8,7 +8,7 @@ const { engines, name } = readLocalPackageJson(['engines', 'name']);
  * @desc 检查当前node版本
  * @returns {Promise<void>}
  */
-const checkNodeVersion = async function (): Promise<void> {
+export const checkNodeVersion = async function (): Promise<void> {
   // node范围
   const requiredVersion = engines!.node ?? '^0.0.0';
   const compliantVersion = semver.satisfies(process.version, requiredVersion, {
@@ -21,9 +21,6 @@ const checkNodeVersion = async function (): Promise<void> {
         `\n您当前使用的Node版本为${process.version}\n\n但此版本的${name}需要Node的版本为 ${requiredVersion}\n\n请升级您的Node版本。`,
       ),
     );
-
     process.exit(1);
   }
 };
-
-export { checkNodeVersion };

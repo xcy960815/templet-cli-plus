@@ -1,20 +1,19 @@
 import path from 'path';
 import fs from 'fs';
-import { initQuestions } from '../questions/init-questions';
-import { deleteFolder } from './delete-folder';
 import chalk from 'chalk';
-import ora from 'ora';
+import { initQuestions } from '@/questions/init-questions';
+import { deleteFolder } from '@/utils/delete-folder';
 
 /**
  * @desc 检查当前路径下面是否存在跟项目重名的文件夹
  * @param {string} projectName
  * @returns {Promise} 返回项目名称
  */
-const checkSameFolder = async function(projectName: string): Promise<string> {
+const checkSameFolder = async function (projectName: string): Promise<string> {
   // 目录列表
   const dirList = fs.readdirSync('./');
   // 是否存在相同的项目名称
-  const hasSameFolder = dirList.some(name => name === projectName);
+  const hasSameFolder = dirList.some((name) => name === projectName);
   if (hasSameFolder) {
     // 空一行
     console.log('');
@@ -34,8 +33,12 @@ const checkSameFolder = async function(projectName: string): Promise<string> {
   }
   return projectName;
 };
-
-const timeSuffix = function(projectName: string): string {
+/**
+ * @desc 生成随机文件后缀
+ * @param {string} projectName
+ * @returns {string}
+ */
+const timeSuffix = function (projectName: string): string {
   const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;

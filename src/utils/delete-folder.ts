@@ -7,12 +7,12 @@ import ora from 'ora';
  * @param {string} filePath
  * @returns {boolean} 删除成功返回true 否则返回false
  */
-const handleDeleteFolder = function(folderPath: fs.PathLike): void {
+const handleDeleteFolder = function (folderPath: fs.PathLike): void {
   const hasFolder = fs.existsSync(folderPath);
   if (hasFolder) {
     // 读取文件夹下面的文件
     const files = fs.readdirSync(folderPath);
-    files.forEach(file => {
+    files.forEach((file) => {
       const nextFilePath = `${folderPath}/${file}`;
 
       const stats = fs.statSync(nextFilePath);
@@ -38,7 +38,7 @@ const handleDeleteFolder = function(folderPath: fs.PathLike): void {
   }
 };
 
-const deleteFolder = function(folderPath: fs.PathLike): void {
+const deleteFolder = function (folderPath: fs.PathLike): void {
   const spinner = ora('===> 开始删除重复文件').start();
   try {
     handleDeleteFolder(folderPath);

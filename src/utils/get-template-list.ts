@@ -14,7 +14,7 @@ interface ITemplate {
  * @link https://bbs.huaweicloud.com/blogs/294241 加速方案
  * @returns {Promise<Record<string, ITemplate>>}
  */
-const getTemplateList = async function(output?: boolean): Promise<Record<string, ITemplate>> {
+const getTemplateList = async function (output?: boolean): Promise<Record<string, ITemplate>> {
   const isDev = process.env.NODE_ENV === 'development';
   let spinner;
   if (output) spinner = ora(chalk.greenBright('正在查询模板相关配置...')).start();
@@ -34,10 +34,9 @@ const getTemplateList = async function(output?: boolean): Promise<Record<string,
 
   // 缓存已过期或文件不存在，重新请求接口获取最新数据
   const result = await promisify(request)({
-    url:
-      'https://ghproxy.com/https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json',
+    url: 'https://ghproxy.com/https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json',
     timeout: 10000,
-  }).catch(error => {
+  }).catch((error) => {
     if (error.code === 'ETIMEDOUT') {
       output && spinner.fail(chalk.redBright('模板相关配置查询超时，请稍后再试'));
     } else {

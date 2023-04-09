@@ -3,10 +3,10 @@ import chalk from 'chalk';
 import fs from 'fs';
 /**
  * @desc 修改 git 项目地址
- * @param {string} newAddress
+ * @param {string} newOriginAddress
  * @returns {Promise<void>}
  */
-export const replaceAddress = async function (newAddress: string): Promise<void> {
+export const replaceOriginAddress = async function (newOriginAddress: string): Promise<void> {
   const currentFolderPath = process.cwd(); /* 获取当前指令所在的地址 */
   const githubFolders = (fs.readdirSync(currentFolderPath) || []).filter(
     //   去掉隐藏文件夹并且是github项目的文件夹
@@ -36,7 +36,7 @@ export const replaceAddress = async function (newAddress: string): Promise<void>
       console.log(`${chalk.yellowBright('更新前地址')}`, `\n${chalk.greenBright(oldAddress)}`);
       // 进入项目目录，删除旧的 git 指向,设置新 git 指向
       await execa(
-        `cd ${currentFolderPath}/${folder} && git remote rm origin && git remote add origin ${newAddress}${folder}`,
+        `cd ${currentFolderPath}/${folder} && git remote rm origin && git remote add origin ${newOriginAddress}${folder}`,
         {
           shell: true,
           stdio: 'inherit',

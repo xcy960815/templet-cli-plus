@@ -1,8 +1,8 @@
-import { download as downloadGitRepo } from './download-git-repo';
 import chalk from 'chalk';
 import ora from 'ora';
-import { printTemplateList } from './print-template-list';
-import { getTemplateList } from './get-template-list';
+import { downloadRepositories } from '@/utils/download-repositories';
+import { printTemplateList } from '@/utils/print-template-list';
+import { getTemplateList } from '@/utils/get-template-list';
 
 /**
  * @desc 下载github的模板
@@ -10,9 +10,9 @@ import { getTemplateList } from './get-template-list';
  * @param {string} projectName 项目名称
  * @returns {Promise<void>}
  */
-const downloadTemplate = async function (
+export const downloadTemplate = async function (
   templateName: string,
-  downloadSource: string,
+  downloadType: string,
   projectName: string,
 ): Promise<void> {
   const templateList = await getTemplateList();
@@ -25,15 +25,17 @@ const downloadTemplate = async function (
   }
   const spinner = ora(chalk.green('开始拉取模版...')).start();
   try {
-    const downloadUrl = `${downloadSource}:${templateOptions.downloadUrl}`;
-    console.log('downloadUrl', downloadUrl);
+    const downloadUrl = `${templateOptions.downloadUrl}`;
+    if (downloadType === 'zip') {
+      // zip:
+      await downloadRepositories(downloadUrl, projectName, { clone: false });
+    }
 
-    await downloadGitRepo(downloadUrl, projectName, { clone: true });
+    // ${downloadType}:
+    await downloadRepositories(downloadUrl, projectName, { clone: true });
     spinner.succeed(chalk.green('===> 模版拉取完成\n'));
   } catch (error) {
     spinner.fail(chalk.red(`===> 模版拉取失败\n`));
     process.exit(1);
   }
 };
-
-export { downloadTemplate };

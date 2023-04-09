@@ -4,10 +4,10 @@ import { Command } from 'commander';
 const program = new Command();
 import { initQuestions } from '@/questions/init-questions';
 import { checkReplaceUrl } from '@/utils/check-replace-url';
-import { replaceAddress } from '@/utils/replace-address';
+import { replaceOriginAddress } from '@/utils/replace-origin-address';
 import { getProcess } from '@/utils/get-process';
 import { killProcess } from '@/utils/kill-process';
-import { download as downloadGitRepo } from '@/utils/download-git-repo';
+import { downloadRepositories } from '@/utils/download-repositories';
 import { downloadTemplate } from '@/utils/download-template';
 import { setTargetPackageJson } from '@/utils/set-target-packagejson';
 import { installDependencies } from '@/utils/install-dependencies';
@@ -65,12 +65,13 @@ program
       'version',
       'description',
       'author',
-      'downloadSource',
+      // 'downloadSource',
+      'downloadType',
     ]);
     // 检查文件
     const newProjectName = await checkSameFolder(answers.projectName);
     // 下载模板
-    await downloadTemplate(answers.templateName, answers.downloadSource, newProjectName);
+    await downloadTemplate(answers.templateName, answers.downloadType, newProjectName);
     // 现在成功之后 修改package.json 内容
     await setTargetPackageJson(newProjectName, answers);
     // 安装依赖包
@@ -88,9 +89,6 @@ program
     await checkCliVersion();
     const templateList = await getTemplateList(true);
     printTemplateList(templateList);
-    // const downloadUrl = 'gitee:https://gitee.com/xuchongyu/rollup-ts-vue3.git';
-    // const downloadUrl = 'gitee:https://gitee.com/kimlimjustin/whatsapp-clone.git';
-    // await downloadGitRepo(downloadUrl, 'test', { clone: true });
   });
 
 /**
@@ -99,13 +97,13 @@ program
 program
   .command('replace <url>')
   .description(chalk.redBright('替换仓库指令'))
-  .action(async (url: string) => {
+  .action(async (originAddress: string) => {
     // 检查cli版本
     await checkCliVersion();
-    //检查url是否合法
-    const newReplaceUrl = await checkReplaceUrl(url);
-    //改变地址
-    await replaceAddress(newReplaceUrl);
+    // 检查url是否合法
+    const newOriginAddress = await checkReplaceUrl(originAddress);
+    // 执行修改地址
+    await replaceOriginAddress(newOriginAddress);
   });
 /**
  * @desc kill指令
@@ -118,6 +116,23 @@ program
     const processOption = await getProcess(port);
     // 杀死进程
     await killProcess(processOption);
+  });
+
+/**
+ * @desc clone指令
+ */
+program
+  .command('clone <url>')
+  .description(chalk.blueBright('clone指令'))
+  .action(async (url: string) => {
+    // 检查cli版本
+    await checkCliVersion();
+    // 从url中获取项目名称
+    const projectName = url.split('/').pop()?.replace('.git', '') || '';
+    // 检查重复文件如果有 给用户提示
+    const newProjectName = await checkSameFolder(projectName);
+    // 下载仓库
+    await downloadRepositories(`direct:${url}`, newProjectName, { clone: true });
   });
 /**
  * @desc 脚手架更新指令
