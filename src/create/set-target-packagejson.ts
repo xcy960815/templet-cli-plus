@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
-import { readLocalPackageJson } from './read-local-packagejson';
+import { readLocalPackageJson } from '../common/read-local-packagejson';
 import { QuestionsMap } from '@/questions/init-questions';
 interface ITargetPackageJson {
   name: string;
@@ -77,26 +77,6 @@ interface ITargetPackageJson {
  * @param answers
  * @returns {void}
  */
-// type IAnswers = {
-//   [key in keyof Exclude<
-//     keyof QuestionsMap,
-//     Exclude<keyof QuestionsMap, 'version' | 'description' | 'author'>
-//   >]: string
-// };
-
-// type IAnswers = {
-//   [key in keyof Exclude<
-//     keyof QuestionsMap,
-//     Exclude<keyof QuestionsMap, 'version' | 'description' | 'author'>
-//   >]: QuestionsMap[key] extends Object ? never : string
-// };
-
-// type IAnswers = {
-//   [key in keyof Exclude<
-//     keyof QuestionsMap,
-//     Exclude<keyof QuestionsMap, 'version' | 'description' | 'author'>
-//   >]: QuestionsMap[key] extends Function ? never : string
-// };
 
 type IAnswers = { [key in keyof QuestionsMap]: string };
 

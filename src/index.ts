@@ -1,22 +1,24 @@
-import { checkNodeVersion } from '@/utils/check-node-version';
+import { checkNodeVersion } from '@/common/check-node-version';
 checkNodeVersion();
 import { Command } from 'commander';
 const program = new Command();
 import { initQuestions } from '@/questions/init-questions';
-import { checkReplaceUrl } from '@/utils/check-replace-url';
-import { replaceOriginAddress } from '@/utils/replace-origin-address';
-import { getProcess } from '@/utils/get-process';
-import { killProcess } from '@/utils/kill-process';
-import { downloadRepositories } from '@/utils/download-repositories';
-import { downloadTemplate } from '@/utils/download-template';
-import { setTargetPackageJson } from '@/utils/set-target-packagejson';
-import { installDependencies } from '@/utils/install-dependencies';
+import { checkReplaceUrl } from '@/replace/check-replace-url';
+import { replaceOriginAddress } from '@/replace/replace-origin-address';
+import { getProcess } from '@/kill/get-process';
+import { killProcess } from '@/kill/kill-process';
+import { downloadRepositorie } from '@/common/download-repositorie';
+import { downloadTemplate } from '@/common/download-template';
+import { setTargetPackageJson } from '@/create/set-target-packagejson';
+import { installDependencies } from '@/common/install-dependencies';
 import chalk from 'chalk';
-import { checkCliVersion } from '@/utils/check-cli-version';
-import { checkSameFolder } from '@/utils/check-same-folder';
-import { getTemplateList } from '@/utils/get-template-list';
-import { printTemplateList } from '@/utils/print-template-list';
-import { readLocalPackageJson } from '@/utils/read-local-packagejson';
+import { checkCliVersion } from '@/update/check-cli-version';
+import { checkSameFolder } from '@/common/check-same-folder';
+import { checkSameFolder as cloneCheckSameFolder } from '@/clone/check-same-folder';
+import { cloneRepositorie } from '@/clone/clone-repositorie';
+import { getTemplateList } from '@/list/get-template-list';
+import { printTemplateList } from '@/list/print-template-list';
+import { readLocalPackageJson } from '@/common/read-local-packagejson';
 const { bin, version } = readLocalPackageJson(['bin', 'version']);
 // 获取当前的指令
 const cliShell = Object.keys(bin || {})[0];
@@ -127,12 +129,9 @@ program
   .action(async (url: string) => {
     // 检查cli版本
     await checkCliVersion();
-    // 从url中获取项目名称
-    const projectName = url.split('/').pop()?.replace('.git', '') || '';
-    // 检查重复文件如果有 给用户提示
-    const newProjectName = await checkSameFolder(projectName);
-    // 下载仓库
-    await downloadRepositories(`direct:${url}`, newProjectName, { clone: true });
+    await cloneCheckSameFolder(url);
+    // clone 仓库
+    await cloneRepositorie(url);
   });
 /**
  * @desc 脚手架更新指令

@@ -1,6 +1,6 @@
 import semver from 'semver';
 import chalk from 'chalk';
-import { readLocalPackageJson } from '@/utils/read-local-packagejson';
+import { readLocalPackageJson } from '@/common/read-local-packagejson';
 // 获取package.json的内容
 const { engines, name } = readLocalPackageJson(['engines', 'name']);
 

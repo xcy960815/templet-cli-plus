@@ -2,7 +2,7 @@ import pck from '../../package.json';
 
 type PackageOriginalContent = typeof pck & { engines?: { node?: string } };
 type TPackageContent<K extends keyof PackageOriginalContent | 'engines'> = {
-  [key in K]?: PackageOriginalContent[key]
+  [key in K]?: PackageOriginalContent[key];
 };
 
 /**
@@ -19,7 +19,7 @@ const readLocalPackageJson = <K extends keyof PackageOriginalContent | 'engines'
     engines?: { node: string };
   };
   if (packageKeys && packageKeys.length) {
-    packageKeys.forEach(key => {
+    packageKeys.forEach((key) => {
       if (key === 'engines') {
         packageContent[key] = originalContent[key] as TPackageContent<K>[K];
       } else {

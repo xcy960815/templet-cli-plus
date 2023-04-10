@@ -39,12 +39,12 @@ const handleDeleteFolder = function (folderPath: fs.PathLike): void {
 };
 
 const deleteFolder = function (folderPath: fs.PathLike): void {
-  const spinner = ora('===> 开始删除重复文件').start();
+  const spinner = ora('===> 开始删除文件').start();
   try {
     handleDeleteFolder(folderPath);
-    spinner.succeed(chalk.green('===> 重复文件删除完毕\n'));
+    spinner.succeed(chalk.green('===> 文件删除完毕\n'));
   } catch (error) {
-    spinner.fail(chalk.red(`===> 删除重复文件失败`));
+    spinner.fail(chalk.red(`===> 删除文件失败`));
     process.exit(1);
   }
 };

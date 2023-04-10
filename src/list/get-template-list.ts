@@ -14,7 +14,9 @@ interface ITemplate {
  * @link https://bbs.huaweicloud.com/blogs/294241 加速方案
  * @returns {Promise<Record<string, ITemplate>>}
  */
-const getTemplateList = async function (output?: boolean): Promise<Record<string, ITemplate>> {
+export const getTemplateList = async function (
+  output?: boolean,
+): Promise<Record<string, ITemplate>> {
   const isDev = process.env.NODE_ENV === 'development';
   let spinner;
   if (output) spinner = ora(chalk.greenBright('正在查询模板相关配置...')).start();
@@ -51,5 +53,3 @@ const getTemplateList = async function (output?: boolean): Promise<Record<string
 
   return JSON.parse(result.body);
 };
-
-export { getTemplateList };

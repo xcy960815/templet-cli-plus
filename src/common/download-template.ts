@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { downloadRepositories } from '@/utils/download-repositories';
-import { printTemplateList } from '@/utils/print-template-list';
-import { getTemplateList } from '@/utils/get-template-list';
+import { downloadRepositorie } from '@/common/download-repositorie';
+import { printTemplateList } from '@/list/print-template-list';
+import { getTemplateList } from '@/list/get-template-list';
 
 /**
  * @desc 下载github的模板
@@ -27,12 +27,10 @@ export const downloadTemplate = async function (
   try {
     const downloadUrl = `${templateOptions.downloadUrl}`;
     if (downloadType === 'zip') {
-      // zip:
-      await downloadRepositories(downloadUrl, projectName, { clone: false });
+      await downloadRepositorie(downloadUrl, projectName, { clone: false });
     }
-
     // ${downloadType}:
-    await downloadRepositories(downloadUrl, projectName, { clone: true });
+    await downloadRepositorie(downloadUrl, projectName, { clone: true });
     spinner.succeed(chalk.green('===> 模版拉取完成\n'));
   } catch (error) {
     spinner.fail(chalk.red(`===> 模版拉取失败\n`));

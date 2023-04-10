@@ -1,10 +1,10 @@
 import ora from 'ora';
 import semver from 'semver';
-import { initQuestions } from '@/questions/init-questions';
+import { initQuestions } from '../questions/init-questions';
 import chalk from 'chalk';
 import { promisify } from 'util';
 import { updateCliVersion } from './update-cli-version';
-import { readLocalPackageJson } from './read-local-packagejson';
+import { readLocalPackageJson } from '../common/read-local-packagejson';
 import request from 'request';
 const { name, version } = readLocalPackageJson(['name', 'version']);
 

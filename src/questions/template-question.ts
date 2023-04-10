@@ -1,4 +1,4 @@
-import { getTemplateList } from '../utils/get-template-list';
+import { getTemplateList } from '../list/get-template-list';
 
 export interface ITemplateQuestion {
   type: 'list';
@@ -11,9 +11,9 @@ export interface ITemplateQuestion {
  * @desc 选择指定版本的问题
  * @returns {Promise<ITemplateQuestion>}
  */
-const templateNameQuestion = async function(): Promise<ITemplateQuestion> {
+const templateNameQuestion = async function (): Promise<ITemplateQuestion> {
   const templateList = await getTemplateList(true);
-  const choices = Object.keys(templateList).map(name => ({ name }));
+  const choices = Object.keys(templateList).map((name) => ({ name }));
   return {
     type: 'list',
     message: '请选择模版版本',

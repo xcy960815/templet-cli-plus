@@ -1,4 +1,4 @@
-import { readLocalPackageJson } from '@/utils/read-local-packagejson';
+import { readLocalPackageJson } from '@/common/read-local-packagejson';
 interface IUpdateCliVersionQuestion {
   type: 'confirm';
   name: 'updateCliVersion';
@@ -9,7 +9,7 @@ interface IUpdateCliVersionQuestion {
  * @description 更新cli版本问题
  * @returns {IUpdateCliVersionQuestion}
  */
-const updateCliVersionQuestion = function(): IUpdateCliVersionQuestion {
+const updateCliVersionQuestion = function (): IUpdateCliVersionQuestion {
   const { name } = readLocalPackageJson(['name']);
   return {
     type: 'confirm',

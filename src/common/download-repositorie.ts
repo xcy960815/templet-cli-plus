@@ -24,7 +24,7 @@ interface IOptions {
  * @param {IOptions} options
  */
 
-const downloadRepositories = async (
+export const downloadRepositorie = async (
   repositoryPath: string,
   dest: string,
   options?: IOptions,
@@ -147,5 +147,3 @@ function getUrl(repositoryOptions: IRepositoryOptions, clone: boolean): string {
 
   return url;
 }
-
-export { downloadRepositories };

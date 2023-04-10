@@ -2,14 +2,14 @@ import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
 import { initQuestions } from '@/questions/init-questions';
-import { deleteFolder } from '@/utils/delete-folder';
+import { deleteFolder } from '@/common/delete-folder';
 
 /**
  * @desc 检查当前路径下面是否存在跟项目重名的文件夹
  * @param {string} projectName
  * @returns {Promise} 返回项目名称
  */
-const checkSameFolder = async function (projectName: string): Promise<string> {
+export const checkSameFolder = async function (projectName: string): Promise<string> {
   // 目录列表
   const dirList = fs.readdirSync('./');
   // 是否存在相同的项目名称
@@ -50,5 +50,3 @@ const timeSuffix = function (projectName: string): string {
   projectName = `${projectName} ${year}-${fullMonth}-${date} ${hours}:${minutes}:${seconds}`;
   return projectName;
 };
-
-export { checkSameFolder };

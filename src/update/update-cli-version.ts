@@ -1,5 +1,5 @@
 import execa from 'execa';
-import { readLocalPackageJson } from './read-local-packagejson';
+import { readLocalPackageJson } from '../common/read-local-packagejson';
 const { name } = readLocalPackageJson(['name']);
 
 /**
