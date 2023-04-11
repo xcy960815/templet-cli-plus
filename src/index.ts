@@ -8,13 +8,12 @@ import { replaceOriginAddress } from '@/replace/replace-origin-address';
 import { getProcess } from '@/kill/get-process';
 import { killProcess } from '@/kill/kill-process';
 import { downloadRepositorie } from '@/common/download-repositorie';
-import { downloadTemplate } from '@/common/download-template';
-import { setTargetPackageJson } from '@/create/set-target-packagejson';
-import { installDependencies } from '@/common/install-dependencies';
+import { downloadTemplate } from '@/create&&init/download-template';
+import { setTargetPackageJson } from '@/create&&init/set-target-packagejson';
+import { installDependencies } from '@/create&&init/install-dependencies';
 import chalk from 'chalk';
 import { checkCliVersion } from '@/update/check-cli-version';
 import { checkSameFolder } from '@/common/check-same-folder';
-import { checkSameFolder as cloneCheckSameFolder } from '@/clone/check-same-folder';
 import { cloneRepositorie } from '@/clone/clone-repositorie';
 import { getTemplateList } from '@/list/get-template-list';
 import { printTemplateList } from '@/list/print-template-list';
@@ -34,21 +33,15 @@ program
     // 检查版本号
     await checkCliVersion();
     // 收集用户配置
-    const answers = await initQuestions([
-      'projectName',
-      'version',
-      'description',
-      'author',
-      'downloadSource',
-    ]);
+    const answers = await initQuestions(['projectName', 'version', 'description', 'author']);
     // 检查文件名称
-    const newProjectName = await checkSameFolder(projectName);
+    const hasSameFolder = await checkSameFolder(projectName);
     // 下载模板
-    await downloadTemplate(templateName, answers.downloadSource, newProjectName);
-    // 现在成功之后 修改package.json 内容
-    await setTargetPackageJson(newProjectName, answers);
-    // 安装依赖包
-    installDependencies(templateName, newProjectName);
+    // await downloadTemplate(templateName, newProjectName);
+    // // 现在成功之后 修改package.json 内容
+    // await setTargetPackageJson(newProjectName, answers);
+    // // 安装依赖包
+    // installDependencies(templateName, newProjectName);
   });
 
 /**
@@ -67,17 +60,15 @@ program
       'version',
       'description',
       'author',
-      // 'downloadSource',
-      'downloadType',
     ]);
     // 检查文件
-    const newProjectName = await checkSameFolder(answers.projectName);
-    // 下载模板
-    await downloadTemplate(answers.templateName, answers.downloadType, newProjectName);
-    // 现在成功之后 修改package.json 内容
-    await setTargetPackageJson(newProjectName, answers);
-    // 安装依赖包
-    installDependencies(answers.templateName, newProjectName);
+    // const newProjectName = await checkSameFolder(answers.projectName);
+    // // 下载模板
+    // await downloadTemplate(answers.templateName, answers.downloadType, newProjectName);
+    // // 现在成功之后 修改package.json 内容
+    // await setTargetPackageJson(newProjectName, answers);
+    // // 安装依赖包
+    // installDependencies(answers.templateName, newProjectName);
   });
 
 /**
@@ -113,7 +104,7 @@ program
 program
   .command('kill <port>')
   .description(chalk.blueBright('kill指令'))
-  .action(async (port) => {
+  .action(async (port: string) => {
     // 获取进程id
     const processOption = await getProcess(port);
     // 杀死进程
@@ -129,7 +120,11 @@ program
   .action(async (url: string) => {
     // 检查cli版本
     await checkCliVersion();
-    await cloneCheckSameFolder(url);
+    const hasSameFolder = await checkSameFolder(url);
+    if (hasSameFolder) {
+      console.log(chalk.redBright('检测到当前目录下存在相同的文件名, 请更换文件名后重试'));
+      process.exit(1);
+    }
     // clone 仓库
     await cloneRepositorie(url);
   });

@@ -11,10 +11,11 @@ interface ITemplate {
  * @param {Record<string, ITemplate>} templateList
  * @returns {Promise<void>}
  */
-const printTemplateList = async function (templateList: Record<string, ITemplate>): Promise<void> {
+export const printTemplateList = async function (
+  templateList: Record<string, ITemplate>,
+): Promise<void> {
   // 获取终端的宽度
   const terminalWidth = process.stdout.columns;
-
   const templateNames = Object.keys(templateList);
   const templateValues = Object.values(templateList).map((item) => item.desc);
   // 英文的最大长度
@@ -56,5 +57,3 @@ const printTemplateList = async function (templateList: Record<string, ITemplate
   // 输出表格到控制台
   console.log(table.toString());
 };
-
-export { printTemplateList };

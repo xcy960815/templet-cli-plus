@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { downloadRepositorie } from '@/common/download-repositorie';
+import gitclone from 'git-clone/promise';
+// import { downloadRepositorie } from '@/common/download-repositorie';
 import { printTemplateList } from '@/list/print-template-list';
 import { getTemplateList } from '@/list/get-template-list';
 
@@ -12,7 +13,6 @@ import { getTemplateList } from '@/list/get-template-list';
  */
 export const downloadTemplate = async function (
   templateName: string,
-  downloadType: string,
   projectName: string,
 ): Promise<void> {
   const templateList = await getTemplateList();
@@ -26,11 +26,12 @@ export const downloadTemplate = async function (
   const spinner = ora(chalk.green('开始拉取模版...')).start();
   try {
     const downloadUrl = `${templateOptions.downloadUrl}`;
-    if (downloadType === 'zip') {
-      await downloadRepositorie(downloadUrl, projectName, { clone: false });
-    }
-    // ${downloadType}:
-    await downloadRepositorie(downloadUrl, projectName, { clone: true });
+    // await downloadRepositorie(downloadUrl, projectName, { clone: true });
+    const result = await gitclone(downloadUrl, projectName, {
+      checkout: 'master',
+      shallow: true,
+    }).catch((error) => error);
+    console.log('result', result);
     spinner.succeed(chalk.green('===> 模版拉取完成\n'));
   } catch (error) {
     spinner.fail(chalk.red(`===> 模版拉取失败\n`));

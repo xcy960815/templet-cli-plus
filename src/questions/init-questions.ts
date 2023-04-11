@@ -18,9 +18,9 @@ export const questionsMap = {
   projectName: projectNameQuestion,
   deleteFolder: deleteFolderQuestion,
   updateCliVersion: updateCliVersionQuestion,
-  downloadSource: downloadSourceQuestion,
   replaceUrl: replaceUrlQuestion,
-  downloadType: downloadTypeQuestion,
+  // downloadSource: downloadSourceQuestion,
+  // downloadType: downloadTypeQuestion,
 };
 
 export type QuestionsMap = { [key in keyof typeof questionsMap]?: Function };

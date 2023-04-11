@@ -33,16 +33,20 @@ export const cloneRepositorie = async function (url: string): Promise<void> {
     await execa(cloneUrl, {
       cwd: process.cwd(),
       stdio: 'inherit',
+      shell: true,
     });
-    // // 删除.git文件夹
-    // await execa.command(`rm -rf ./${getRepositoriesName(url)}/.git`, {
-    //   cwd: process.cwd(),
-    //   stdio: 'inherit',
-    // });
+    // 通过url获取仓库名称
+    const repositoriesName = url.split('/').pop()?.replace('.git', '') || '';
+    // 删除.git文件夹
+    await execa(`rm -rf ./${repositoriesName}/.git`, {
+      cwd: process.cwd(),
+      stdio: 'inherit',
+      shell: true,
+    });
   } catch (error) {
     console.log(chalk.red(`===> 下载失败\n`));
+    console.log(error);
     process.exit(1);
   }
   getDownloadTime.end();
-  process.exit(0);
 };
