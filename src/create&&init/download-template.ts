@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import gitclone from 'git-clone/promise';
-// import { downloadRepositorie } from '@/common/download-repositorie';
 import { printTemplateList } from '@/list/print-template-list';
 import { getTemplateList } from '@/list/get-template-list';
 
@@ -23,15 +22,15 @@ export const downloadTemplate = async function (
     printTemplateList(templateList);
     process.exit(1);
   }
+  console.log('');
   const spinner = ora(chalk.green('开始拉取模版...')).start();
   try {
-    const downloadUrl = `${templateOptions.downloadUrl}`;
-    // await downloadRepositorie(downloadUrl, projectName, { clone: true });
-    const result = await gitclone(downloadUrl, projectName, {
+    // 利用 ghproxy.com 代理 github.com
+    const downloadUrl = `https://ghproxy.com/${templateOptions.downloadUrl.replace('#master', '')}`;
+    await gitclone(downloadUrl, projectName, {
       checkout: 'master',
       shallow: true,
-    }).catch((error) => error);
-    console.log('result', result);
+    });
     spinner.succeed(chalk.green('===> 模版拉取完成\n'));
   } catch (error) {
     spinner.fail(chalk.red(`===> 模版拉取失败\n`));

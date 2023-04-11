@@ -7,13 +7,13 @@ import { checkReplaceUrl } from '@/replace/check-replace-url';
 import { replaceOriginAddress } from '@/replace/replace-origin-address';
 import { getProcess } from '@/kill/get-process';
 import { killProcess } from '@/kill/kill-process';
-import { downloadRepositorie } from '@/common/download-repositorie';
 import { downloadTemplate } from '@/create&&init/download-template';
 import { setTargetPackageJson } from '@/create&&init/set-target-packagejson';
 import { installDependencies } from '@/create&&init/install-dependencies';
 import chalk from 'chalk';
 import { checkCliVersion } from '@/update/check-cli-version';
-import { checkSameFolder } from '@/common/check-same-folder';
+import { checkSameFolder } from '@/create&&init/check-same-folder';
+import { handleSameFolder } from '@/create&&init/handle-same-folder';
 import { cloneRepositorie } from '@/clone/clone-repositorie';
 import { getTemplateList } from '@/list/get-template-list';
 import { printTemplateList } from '@/list/print-template-list';
@@ -33,15 +33,19 @@ program
     // 检查版本号
     await checkCliVersion();
     // 收集用户配置
-    const answers = await initQuestions(['projectName', 'version', 'description', 'author']);
+    const answers = await initQuestions(
+      ['projectName', 'version', 'description', 'author'],
+      projectName,
+    );
     // 检查文件名称
     const hasSameFolder = await checkSameFolder(projectName);
-    // 下载模板
-    // await downloadTemplate(templateName, newProjectName);
-    // // 现在成功之后 修改package.json 内容
-    // await setTargetPackageJson(newProjectName, answers);
-    // // 安装依赖包
-    // installDependencies(templateName, newProjectName);
+    const newProjectName = hasSameFolder ? await handleSameFolder(projectName) : projectName;
+
+    await downloadTemplate(templateName, newProjectName);
+
+    await setTargetPackageJson(newProjectName, { ...answers, templateName });
+
+    installDependencies(newProjectName);
   });
 
 /**
@@ -61,14 +65,16 @@ program
       'description',
       'author',
     ]);
-    // 检查文件
-    // const newProjectName = await checkSameFolder(answers.projectName);
-    // // 下载模板
-    // await downloadTemplate(answers.templateName, answers.downloadType, newProjectName);
-    // // 现在成功之后 修改package.json 内容
-    // await setTargetPackageJson(newProjectName, answers);
-    // // 安装依赖包
-    // installDependencies(answers.templateName, newProjectName);
+    const hasSameFolder = await checkSameFolder(answers.projectName);
+    const newProjectName = hasSameFolder
+      ? await handleSameFolder(answers.projectName)
+      : answers.projectName;
+    // 下载模板
+    await downloadTemplate(answers.templateName, newProjectName);
+    // 现在成功之后 修改package.json 内容
+    await setTargetPackageJson(newProjectName, answers);
+    // 安装依赖包
+    installDependencies(newProjectName);
   });
 
 /**

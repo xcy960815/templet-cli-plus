@@ -35,14 +35,6 @@ export const cloneRepositorie = async function (url: string): Promise<void> {
       stdio: 'inherit',
       shell: true,
     });
-    // 通过url获取仓库名称
-    const repositoriesName = url.split('/').pop()?.replace('.git', '') || '';
-    // 删除.git文件夹
-    await execa(`rm -rf ./${repositoriesName}/.git`, {
-      cwd: process.cwd(),
-      stdio: 'inherit',
-      shell: true,
-    });
   } catch (error) {
     console.log(chalk.red(`===> 下载失败\n`));
     console.log(error);
