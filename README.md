@@ -34,6 +34,7 @@ temp create <templateName> <projectName>
     templateName --> 模板名称(不知道模板名称可以执行 temp list 查看)
 
     projectName --> 项目名称(自己的项目名称,如 test)
+
 ```
 
 #### 代理 github clone 指令
@@ -51,6 +52,15 @@ temp clone <githubUrl>
 temp replace <originUrl>
 
     originUrl --> 远程仓库地址(originUrl是你的远程github用户地址，不是具体某个仓库地址，如：https://github.com/username)
+
+```
+
+#### kill 占用端口指令
+
+```shell
+temp kill <port>
+
+    port --> 端口号(如：8080)
 
 ```
 

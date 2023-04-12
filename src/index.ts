@@ -138,11 +138,11 @@ program
  */
 program
   .command('update')
-  .description(chalk.bgYellow('脚手架更新指令'))
+  .description(chalk.blueBright('脚手架更新指令'))
   .action(async () => {
     // 检查版本号
     await checkCliVersion();
-    console.log(chalk.bgYellow('🎉 脚手架已经是最新版本\n'));
+    console.log(chalk.blueBright('🎉 脚手架已经是最新版本\n'));
   });
 
 /**
@@ -151,7 +151,7 @@ program
  */
 program
   .command('help')
-  .description('脚手架帮助指令')
+  .description(chalk.bgRed('脚手架帮助指令'))
   .action(async () => {
     // 检查版本号
     await checkCliVersion();
@@ -170,9 +170,13 @@ program
       )}`,
     );
     console.log(
-      `${chalk.bgRed(`${cliShell} kill <端口号>`)} : ${chalk.bgRed('杀死指定端口号的进程')}`,
+      `${chalk.blueBright(`${cliShell} update`)} : ${chalk.blueBright('脚手架更新指令')}`,
     );
-    console.log(`${chalk.bgYellow(`${cliShell} update`)} : ${chalk.bgYellow('脚手架更新指令')}`);
+    console.log(
+      `${chalk.redBright(`${cliShell} kill <端口号>`)} : ${chalk.redBright(
+        '杀死指定端口号的进程',
+      )}`,
+    );
   });
 
 program.parse(process.argv);
