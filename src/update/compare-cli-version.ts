@@ -1,14 +1,16 @@
 import semver from 'semver';
 import chalk from 'chalk';
 import { initQuestions } from '../questions/init-questions';
-import { readLocalPackageJson } from '../utils/read-local-packagejson';
+import { readLocalPackageJson } from '../common/read-local-packagejson';
 const { name, version } = readLocalPackageJson(['name', 'version']);
 
 /**
  * @desc 对比线上最新的脚手架版本号
  * @return {Promise<void>}
  */
-export const compareCliVersion = async (parseBody): Promise<string | undefined> => {
+export const compareCliVersion = async (parseBody: {
+  'dist-tags': { latest: string };
+}): Promise<string | undefined> => {
   const latestVersion = parseBody['dist-tags'].latest;
   const currentVersion = version;
   // 版本号对比
@@ -19,7 +21,6 @@ export const compareCliVersion = async (parseBody): Promise<string | undefined> 
     console.log('  当前版本:    ' + chalk.red(currentVersion));
     const answer = await initQuestions(['updateCliVersion']);
     if (answer.updateCliVersion) {
-      // await updateCliVersion(latestVersion);
       return latestVersion;
     } else {
       console.log(chalk.red('已放弃版本更新'));
