@@ -16,7 +16,8 @@ import { checkSameFolder } from '@/create&&init/check-same-folder';
 import { handleSameFolder } from '@/create&&init/handle-same-folder';
 import { cloneRepositorie } from '@/clone/clone-repositorie';
 import { getTemplateList } from '@/list/get-template-list';
-import { printTemplateList } from '@/list/print-template-list';
+import { printHelp } from '@/help/print-help';
+import { printAsTable } from '@/common/print-as-table';
 import { readLocalPackageJson } from '@/common/read-local-packagejson';
 const { bin, version } = readLocalPackageJson(['bin', 'version']);
 // 获取当前的指令
@@ -84,7 +85,12 @@ program
     // 检查版本号
     await checkCliVersion();
     const templateList = await getTemplateList(true);
-    printTemplateList(templateList);
+    const tableHeader = [chalk.red('  模板名称'), chalk.blue('  模板描述')];
+    const tableBody: { [key: string]: string } = {};
+    Object.keys(templateList).forEach((key) => {
+      tableBody[key] = templateList[key].desc;
+    });
+    printAsTable(tableBody, tableHeader);
   });
 
 /**
@@ -155,28 +161,7 @@ program
   .action(async () => {
     // 检查版本号
     await checkCliVersion();
-    console.log(
-      `${chalk.blueBright(`${cliShell} list`)} : ${chalk.blueBright('查看所有模板列表')}`,
-    );
-    console.log(`${chalk.redBright(`${cliShell} init`)} : ${chalk.redBright('自定义选择模板')}`);
-    console.log(
-      `${chalk.yellowBright(`${cliShell} create <模板名称> <项目名称>`)} : ${chalk.yellowBright(
-        '指定模板名称创建项目',
-      )}`,
-    );
-    console.log(
-      `${chalk.greenBright(`${cliShell} replace <仓库地址>`)} : ${chalk.greenBright(
-        '替换仓库地址',
-      )}`,
-    );
-    console.log(
-      `${chalk.blueBright(`${cliShell} update`)} : ${chalk.blueBright('脚手架更新指令')}`,
-    );
-    console.log(
-      `${chalk.redBright(`${cliShell} kill <端口号>`)} : ${chalk.redBright(
-        '杀死指定端口号的进程',
-      )}`,
-    );
+    printHelp();
   });
 
 program.parse(process.argv);

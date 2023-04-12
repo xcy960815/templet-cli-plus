@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import gitclone from 'git-clone/promise';
-import { printTemplateList } from '@/list/print-template-list';
+import { printAsTable } from '@/common/print-as-table';
 import { getTemplateList } from '@/list/get-template-list';
 
 /**
@@ -19,7 +19,12 @@ export const downloadTemplate = async function (
   // 判断模板是否存在
   if (!templateOptions) {
     console.log(chalk.red(`===>【${templateName}】模版不存在, 请重新选择模版名称。\n`));
-    printTemplateList(templateList);
+    const tableHeader = [chalk.red('  模板名称'), chalk.blue('  模板描述')];
+    const tableBody: { [key: string]: string } = {};
+    Object.keys(templateList).forEach((key) => {
+      tableBody[key] = templateList[key].desc;
+    });
+    printAsTable(tableBody, tableHeader);
     process.exit(1);
   }
   console.log('');
