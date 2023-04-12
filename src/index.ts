@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { checkNodeVersion } from '@/common/check-node-version';
 checkNodeVersion();
 import { Command } from 'commander';
@@ -5,12 +6,11 @@ const program = new Command();
 import { initQuestions } from '@/questions/init-questions';
 import { checkReplaceUrl } from '@/replace/check-replace-url';
 import { replaceOriginAddress } from '@/replace/replace-origin-address';
-import { getProcess } from '@/kill/get-process';
-import { killProcess } from '@/kill/kill-process';
+import { getProcessByPort } from '@/kill-process/get-process-port';
+import { killProcess } from '@/kill-process/kill-process';
 import { downloadTemplate } from '@/create&&init/download-template';
 import { setTargetPackageJson } from '@/create&&init/set-target-packagejson';
 import { installDependencies } from '@/create&&init/install-dependencies';
-import chalk from 'chalk';
 import { checkCliVersion } from '@/update/check-cli-version';
 import { checkSameFolder } from '@/create&&init/check-same-folder';
 import { handleSameFolder } from '@/create&&init/handle-same-folder';
@@ -40,11 +40,8 @@ program
     // 检查文件名称
     const hasSameFolder = await checkSameFolder(projectName);
     const newProjectName = hasSameFolder ? await handleSameFolder(projectName) : projectName;
-
     await downloadTemplate(templateName, newProjectName);
-
     await setTargetPackageJson(newProjectName, { ...answers, templateName });
-
     installDependencies(newProjectName);
   });
 
@@ -104,17 +101,18 @@ program
     // 执行修改地址
     await replaceOriginAddress(newOriginAddress);
   });
+
 /**
- * @desc kill指令
+ * @desc kill 指令
  */
 program
   .command('kill <port>')
   .description(chalk.blueBright('kill指令'))
   .action(async (port: string) => {
     // 获取进程id
-    const processOption = await getProcess(port);
+    const processOptions = await getProcessByPort(port);
     // 杀死进程
-    await killProcess(processOption);
+    await killProcess(processOptions, port);
   });
 
 /**

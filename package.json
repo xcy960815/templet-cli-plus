@@ -27,7 +27,7 @@
   },
   "files": [
     "bin/index.cjs.js",
-    "bin/template-list.json"
+    "README.md"
   ],
   "homepage": "https://github.com/xcy960815/templet-cli-plus#readme",
   "devDependencies": {

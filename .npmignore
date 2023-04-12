@@ -13,3 +13,4 @@ vue.config.js
 README.md
 images
 .Ds_Store
+bin/template-list.json
