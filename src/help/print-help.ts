@@ -13,10 +13,12 @@ export const printHelp = (): void => {
   const tableBody = {
     [`${cliShell} list`]: ' 查看所有模板列表',
     [`${cliShell} init`]: ' 自定义选择模板',
-    [`${cliShell} update`]: ' 脚手架更新',
-    [`${cliShell} replace <仓库地址>`]: ' 替换仓库地址',
-    [`${cliShell} kill <端口号>`]: ' 杀死指定端口号的进程',
     [`${cliShell} create <模板名称> <项目名称>`]: ' 指定模板名称创建项目',
+    [`${cliShell} clone <仓库地址>`]: ' 代理 github clone 指令',
+    [`${cliShell} replace <仓库地址>`]: ' 替换仓库地址',
+    [`${cliShell} kill <端口号>`]: ' 杀死占用的端口号的进程',
+    [`${cliShell} update`]: ' 脚手架更新',
+    [`${cliShell} help`]: ' 查看帮助信息',
   };
   printAsTable(tableBody, tableHeader);
 };

@@ -1,7 +1,7 @@
 {
   "name": "templet-cli-plus",
   "version": "0.0.1",
-  "description": "模板脚手架,内置各种vue模板、rollup-js、rollup-ts、rollup-vue-js、rollup-vue-ts、vscode-webview-ts构建模板，无需配置,一键配置使用",
+  "description": "一个融合了多种指令的脚手架工具，都是我平时用到的，所以就把它们整合到一起了，方便自己使用，也方便大家使用。",
   "scripts": {
     "dev": "NODE_ENV=development ENV=daily rollup -c -w",
     "link": "npm link && npm link templet-cli-plus",

@@ -113,7 +113,7 @@ program
  */
 program
   .command('kill <port>')
-  .description(chalk.blueBright('kill指令'))
+  .description(chalk.blueBright('杀死指定端口号的进程'))
   .action(async (port: string) => {
     // 获取进程id
     const processOptions = await getProcessByPort(port);
@@ -126,7 +126,7 @@ program
  */
 program
   .command('clone <url>')
-  .description(chalk.blueBright('clone指令'))
+  .description(chalk.blueBright('代理 github clone 指令'))
   .action(async (url: string) => {
     // 检查cli版本
     await checkCliVersion();
