@@ -26,7 +26,7 @@ export const killProcess = async function (
   const result = await execa(`kill ${processId}`, {
     shell: true,
   });
-  if (result.code === 0) {
+  if (result.exitCode === 0) {
     spinner.succeed(chalk.greenBright(`端口 ${port} 相关进程关闭成功，进程名称: ${processName}`));
     process.exit(0);
   } else {

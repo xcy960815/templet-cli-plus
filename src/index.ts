@@ -19,9 +19,7 @@ import { getTemplateList } from '@/list/get-template-list';
 import { printHelp } from '@/help/print-help';
 import { printAsTable } from '@/common/print-as-table';
 import { readLocalPackageJson } from '@/common/read-local-packagejson';
-const { bin, version } = readLocalPackageJson(['bin', 'version']);
-// 获取当前的指令
-const cliShell = Object.keys(bin || {})[0];
+const { version } = readLocalPackageJson(['bin', 'version']);
 program.version(version!, '-v,-V,--version');
 
 /**
