@@ -2,19 +2,15 @@ import semver from 'semver';
 import chalk from 'chalk';
 import { initQuestions } from '../questions/init-questions';
 import { readLocalPackageJson } from '../common/read-local-packagejson';
-const { name, version } = readLocalPackageJson(['name', 'version']);
+const { name, version: currentVersion } = readLocalPackageJson(['name', 'version']);
 
 /**
  * @desc 对比线上最新的脚手架版本号
  * @return {Promise<void>}
  */
-export const compareCliVersion = async (parseBody: {
-  'dist-tags': { latest: string };
-}): Promise<string | undefined> => {
-  const latestVersion = parseBody['dist-tags'].latest;
-  const currentVersion = version;
+export const compareCliVersion = async (latestVersion: string): Promise<string | undefined> => {
   // 版本号对比
-  const hasNewVersion = semver.lt(currentVersion, latestVersion);
+  const hasNewVersion: boolean = semver.ltr(currentVersion!, latestVersion);
   if (hasNewVersion) {
     console.log(chalk.yellow(`  A newer version of ${name} is available`));
     console.log('  最新版本:    ' + chalk.green(latestVersion));

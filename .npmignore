@@ -9,3 +9,4 @@ images
 .Ds_Store
 bin/template-list.json
 LICENSE
+*.d.ts
