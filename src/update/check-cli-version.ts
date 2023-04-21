@@ -1,7 +1,6 @@
 import { getCliVersion } from './get-cli-version';
 import { compareCliVersion } from './compare-cli-version';
 import { updateCliVersion } from './update-cli-version';
-import semver from 'semver';
 /**
  * @desc 检查脚手架版本号
  * @return {Promise<void>}
