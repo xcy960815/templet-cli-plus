@@ -35,9 +35,21 @@ export const getTemplateList = async function (
   } catch (error) {}
 
   // 缓存已过期或文件不存在，重新请求接口获取最新数据
-  const result = await promisify(request)({
-    url: 'https://ghproxy.com/https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json',
-    timeout: 10000,
+  const promisifyRequest = promisify(request);
+  const result = await promisifyRequest({
+    // 源地址 /https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json
+
+    // 加速地址
+    // https://raw.staticdn.netxcy960815/template-list/master/template-list.json 生效
+
+    // https://ghproxy.com/https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json 未加速 返回 ECONNRESET
+
+    // https://github3.mk-proxy.ml/-----https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json
+
+    // https://gh.api.99988866.xyz/https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json
+
+    url: 'https://raw.staticdn.net/xcy960815/template-list/master/template-list.json',
+    timeout: 20000,
   }).catch((error) => {
     if (error.code === 'ETIMEDOUT') {
       output && spinner.fail(chalk.redBright('模板相关配置查询超时，请稍后再试'));
