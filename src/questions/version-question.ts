@@ -1,8 +1,8 @@
 interface IVersionQuestion {
-  type: 'input';
-  name: 'version';
-  message: '项目版本';
-  default: string;
+  type: 'input'
+  name: 'version'
+  message: '项目版本'
+  default: string
 }
 
 /**
@@ -15,7 +15,7 @@ const versionQuestion = function (): IVersionQuestion {
     name: 'version',
     message: '项目版本',
     default: '1.0.0',
-  };
-};
+  }
+}
 
-export { versionQuestion };
+export { versionQuestion }

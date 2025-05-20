@@ -1,8 +1,8 @@
 interface IProjectNameQuestion {
-  type: 'input';
-  name: 'projectName';
-  message: '请输入项目名称';
-  default: string;
+  type: 'input'
+  name: 'projectName'
+  message: '请输入项目名称'
+  default: string
 }
 
 /**
@@ -11,13 +11,13 @@ interface IProjectNameQuestion {
  * @returns {IProjectNameQuestion}
  */
 const projectNameQuestion = function (projectName?: string): IProjectNameQuestion {
-  projectName = projectName ? projectName : 'project';
+  projectName = projectName ? projectName : 'project'
   return {
     type: 'input',
     name: 'projectName',
     message: '请输入项目名称',
     default: projectName,
-  };
-};
+  }
+}
 
-export { projectNameQuestion };
+export { projectNameQuestion }

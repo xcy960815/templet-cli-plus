@@ -1,17 +1,17 @@
 interface DownloadSourceQuestion {
-  type: 'list';
-  name: 'downloadSource';
-  message: '请选择下载源';
+  type: 'list'
+  name: 'downloadSource'
+  message: '请选择下载源'
   choices: Array<
     | {
-        name: string;
-        value: string;
+        name: string
+        value: string
       }
     | {
-        name: string;
-        value: string;
+        name: string
+        value: string
       }
-  >;
+  >
 }
 
 /**
@@ -34,7 +34,7 @@ const downloadSourceQuestion = function (): DownloadSourceQuestion {
         value: 'gitee',
       },
     ],
-  };
-};
+  }
+}
 
-export { downloadSourceQuestion };
+export { downloadSourceQuestion }

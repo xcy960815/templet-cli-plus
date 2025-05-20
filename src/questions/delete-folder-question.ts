@@ -1,10 +1,10 @@
-import chalk from 'chalk';
+import chalk from 'chalk'
 
 interface IDeleteFolderQuestion {
-  type: 'list';
-  name: 'deleteFolder';
-  message: string;
-  choices: Array<{ name: string; value: string }>;
+  type: 'list'
+  name: 'deleteFolder'
+  message: string
+  choices: Array<{ name: string; value: string }>
 }
 /**
  * @desc 删除文件夹问题
@@ -20,7 +20,7 @@ const deleteFolderQuestion = function (): IDeleteFolderQuestion {
       { name: '保留重名的文件夹并基于当前文件夹创建一个随机的文件夹后缀', value: 'rename' },
       { name: '放弃创建', value: 'cancel' },
     ],
-  };
-};
+  }
+}
 
-export { deleteFolderQuestion };
+export { deleteFolderQuestion }

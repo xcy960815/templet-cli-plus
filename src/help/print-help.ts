@@ -1,15 +1,15 @@
-import chalk from 'chalk';
-import { readLocalPackageJson } from '../common/read-local-packagejson';
-import { printAsTable } from '@/common/print-as-table';
-const { bin } = readLocalPackageJson(['bin']);
-const cliShell = Object.keys(bin || {})[0];
+import chalk from 'chalk'
+import { readLocalPackageJson } from '../common/read-local-packagejson'
+import { printAsTable } from '@/common/print-as-table'
+const { bin } = readLocalPackageJson(['bin'])
+const cliShell = Object.keys(bin || {})[0]
 
 /**
  * @desc 打印帮助信息
- * @return {void}
+ * @return {Promise<void>}
  */
-export const printHelp = (): void => {
-  const tableHeader = [`${chalk.blueBright('  指令')}`, `${chalk.blueBright('   说明')}`];
+export const printHelp = async (): Promise<void> => {
+  const tableHeader = [`${chalk.blueBright('  指令')}`, `${chalk.blueBright('   说明')}`]
   const tableBody = {
     [`${cliShell} list`]: ' 查看所有模板列表',
     [`${cliShell} init`]: ' 自定义选择模板',
@@ -19,6 +19,10 @@ export const printHelp = (): void => {
     [`${cliShell} kill <端口号>`]: ' 杀死占用的端口号的进程',
     [`${cliShell} update`]: ' 脚手架更新',
     [`${cliShell} help`]: ' 查看帮助信息',
-  };
-  printAsTable(tableBody, tableHeader);
-};
+  }
+
+  const cleanup = await printAsTable(tableBody, tableHeader)
+
+  // 当进程退出时清理事件监听器
+  process.on('exit', cleanup)
+}

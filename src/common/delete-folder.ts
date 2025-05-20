@@ -1,52 +1,71 @@
-import fs from 'fs';
-import chalk from 'chalk';
-import ora from 'ora';
+import { promises as fs, existsSync, statSync } from 'fs'
+import { join } from 'path'
+import chalk from 'chalk'
+import ora from 'ora'
 
 /**
- * @desc 删除文件 先删除文件夹下的文件 再删除文件夹
- * @param {string} filePath
- * @returns {boolean} 删除成功返回true 否则返回false
+ * 递归删除文件夹及其内容
+ * @param folderPath - 要删除的文件夹路径
+ * @returns Promise<void>
+ * @throws {Error} 当删除操作失败时抛出错误
  */
-const handleDeleteFolder = function (folderPath: fs.PathLike): void {
-  const hasFolder = fs.existsSync(folderPath);
-  if (hasFolder) {
-    // 读取文件夹下面的文件
-    const folderList = fs.readdirSync(folderPath);
-    folderList.forEach((file) => {
-      const nextFilePath = `${folderPath}/${file}`;
-      const stats = fs.statSync(nextFilePath);
-      // 获取到的文件或目录的信息对象 stats 是否表示一个目录。
-      const isFolder = stats.isDirectory();
-      if (isFolder) {
-        handleDeleteFolder(nextFilePath);
+async function handleDeleteFolder(folderPath: string): Promise<void> {
+  if (!existsSync(folderPath)) {
+    return
+  }
+
+  const items = await fs.readdir(folderPath)
+
+  await Promise.all(
+    items.map(async (item) => {
+      const itemPath = join(folderPath, item)
+      const stats = statSync(itemPath)
+
+      if (stats.isDirectory()) {
+        await handleDeleteFolder(itemPath)
       } else {
         try {
-          // 删除文件
-          fs.unlinkSync(nextFilePath);
+          await fs.unlink(itemPath)
         } catch (error) {
-          console.log(chalk.redBright(`无法删除文件 ${nextFilePath}`));
+          throw new Error(
+            `无法删除文件 ${itemPath}: ${error instanceof Error ? error.message : String(error)}`
+          )
         }
       }
-    });
-    try {
-      // 删除文件夹
-      fs.rmdirSync(folderPath);
-    } catch (error) {
-      console.log(chalk.redBright(`无法删除文件夹 ${folderPath}`));
-    }
-  }
-};
+    })
+  )
 
-const deleteFolder = function (folderPath: fs.PathLike, logOut?: boolean): void {
-  let spinner;
-  logOut && (spinner = ora('===> 开始删除文件').start());
   try {
-    handleDeleteFolder(folderPath);
-    logOut && spinner.succeed(chalk.green('===> 文件删除完毕\n'));
+    await fs.rmdir(folderPath)
   } catch (error) {
-    logOut && spinner.fail(chalk.red(`===> 删除文件失败`));
-    process.exit(1);
+    throw new Error(
+      `无法删除文件夹 ${folderPath}: ${error instanceof Error ? error.message : String(error)}`
+    )
   }
-};
+}
 
-export { deleteFolder };
+/**
+ * 删除指定文件夹及其内容
+ * @param folderPath - 要删除的文件夹路径
+ * @param showProgress - 是否显示进度提示，默认为 false
+ * @returns Promise<void>
+ */
+async function deleteFolder(folderPath: string, showProgress: boolean = false): Promise<void> {
+  const spinner = showProgress ? ora('正在删除文件...').start() : null
+
+  try {
+    await handleDeleteFolder(folderPath)
+    if (showProgress) {
+      spinner?.succeed(chalk.green('文件删除完成\n'))
+    }
+  } catch (error) {
+    if (showProgress) {
+      spinner?.fail(
+        chalk.red(`删除文件失败: ${error instanceof Error ? error.message : String(error)}`)
+      )
+    }
+    throw error
+  }
+}
+
+export { deleteFolder }

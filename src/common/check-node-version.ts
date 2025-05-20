@@ -1,55 +1,87 @@
-// import semver from 'semver';
-// import chalk from 'chalk';
-// import { readLocalPackageJson } from '@/common/read-local-packagejson';
-// // 获取package.json的内容
-// const { engines, name } = readLocalPackageJson(['engines', 'name']);
+import semver from 'semver'
+import chalk from 'chalk'
+import execa from 'execa'
+import { readLocalPackageJson } from '@/common/read-local-packagejson'
 
-// /**
-//  * @desc 检查当前node版本
-//  * @returns {Promise<void>}
-//  */
-// export const checkNodeVersion = async function (): Promise<void> {
-//   // node范围
-//   const requiredVersion = engines!.node ?? '^0.0.0';
-//   const compliantVersion = semver.satisfies(process.version, requiredVersion, {
-//     includePrerelease: true,
-//   });
-//   // 如果node版本不符合 就给用户提示
-//   if (!compliantVersion) {
-//     console.log(
-//       chalk.redBright(
-//         `\n您当前使用的Node版本为${process.version}\n\n但此版本的${name}需要Node的版本为 ${requiredVersion}\n\n请升级您的Node版本。`,
-//       ),
-//     );
-//     process.exit(0);
-//   }
-// };
-import semver from 'semver';
-import chalk from 'chalk';
-import execa from 'execa';
-import { readLocalPackageJson } from '@/common/read-local-packagejson';
+interface PackageEngines {
+  node?: string
+}
 
-const { engines, name } = readLocalPackageJson(['engines', 'name']);
+interface PackageInfo {
+  engines?: PackageEngines
+  name: string
+}
 
 /**
- * 检查当前 node 版本是否符合要求
+ * 自定义错误类，用于 Node.js 版本不兼容的情况
  */
-export const checkNodeVersion = async function (): Promise<void> {
-  // 获取需要的 Node.js 版本范围
-  const requiredVersion = engines!.node ?? '^0.0.0';
-  // const currentNodeVersion = process.version;
-  const { stdout: currentNodeVersion } = await execa('node', ['-v']);
-  const isCompliant = semver.satisfies(currentNodeVersion, requiredVersion, {
-    includePrerelease: true,
-  });
+class NodeVersionError extends Error {
+  constructor(
+    public currentVersion: string,
+    public requiredVersion: string,
+    public packageName: string
+  ) {
+    super(`Node.js 版本不兼容`)
+    this.name = 'NodeVersionError'
+  }
+}
 
-  // 如果当前版本不符合要求，则输出错误信息
-  if (!isCompliant) {
+/**
+ * 获取当前 Node.js 版本
+ * @returns Promise<string> 当前 Node.js 版本
+ * @throws {Error} 当无法获取 Node.js 版本时抛出错误
+ */
+async function getCurrentNodeVersion(): Promise<string> {
+  try {
+    const { stdout } = await execa('node', ['-v'])
+    return stdout.trim()
+  } catch (error) {
+    throw new Error(
+      `无法获取 Node.js 版本: ${error instanceof Error ? error.message : String(error)}`
+    )
+  }
+}
+
+/**
+ * 检查当前 Node.js 版本是否符合要求
+ * @throws {NodeVersionError} 当 Node.js 版本不兼容时抛出错误
+ */
+export async function checkNodeVersion(): Promise<void> {
+  try {
+    const { engines, name } = readLocalPackageJson(['engines', 'name']) as PackageInfo
+    const requiredVersion = engines?.node ?? '^0.0.0'
+    const currentNodeVersion = await getCurrentNodeVersion()
+
+    const isCompliant = semver.satisfies(currentNodeVersion, requiredVersion, {
+      includePrerelease: true,
+    })
+
+    if (!isCompliant) {
+      const error = new NodeVersionError(currentNodeVersion, requiredVersion, name)
+      console.error(
+        chalk.redBright(
+          `\n您当前使用的 Node.js 版本为 ${currentNodeVersion}\n\n` +
+            `但此版本的 ${name} 需要 Node.js 版本为 ${requiredVersion}\n\n` +
+            '请升级您的 Node.js 版本。\n\n' +
+            '您可以使用以下命令升级 Node.js：\n' +
+            '1. 使用 nvm（推荐）：\n' +
+            '   nvm install --lts\n' +
+            '   nvm use --lts\n\n' +
+            '2. 或直接从 Node.js 官网下载：\n' +
+            '   https://nodejs.org/zh-cn/download/\n'
+        )
+      )
+      throw error
+    }
+  } catch (error) {
+    if (error instanceof NodeVersionError) {
+      process.exit(1)
+    }
     console.error(
       chalk.redBright(
-        `\n您当前使用的 Node.js 版本为 ${process.version}\n\n但此版本的 ${name} 需要 Node.js 版本为 ${requiredVersion}\n\n请升级您的 Node.js 版本。`,
-      ),
-    );
-    process.exit(1); // 使用非零数表示出现了异常
+        `检查 Node.js 版本时出错: ${error instanceof Error ? error.message : String(error)}`
+      )
+    )
+    process.exit(1)
   }
-};
+}

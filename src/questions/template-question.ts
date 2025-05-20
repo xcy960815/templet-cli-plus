@@ -1,10 +1,10 @@
-import { getTemplateList } from '../list/get-template-list';
+import { getTemplateList } from '../list/get-template-list'
 
 export interface ITemplateQuestion {
-  type: 'list';
-  message: '请选择模版版本';
-  name: 'templateName';
-  choices: Array<{ name: string }>;
+  type: 'list'
+  message: '请选择模版版本'
+  name: 'templateName'
+  choices: Array<{ name: string }>
 }
 
 /**
@@ -12,13 +12,13 @@ export interface ITemplateQuestion {
  * @returns {Promise<ITemplateQuestion>}
  */
 const templateNameQuestion = async function (): Promise<ITemplateQuestion> {
-  const templateList = await getTemplateList(true);
-  const choices = Object.keys(templateList).map((name) => ({ name }));
+  const templateList = await getTemplateList(true)
+  const choices = Object.keys(templateList).map((name) => ({ name }))
   return {
     type: 'list',
     message: '请选择模版版本',
     name: 'templateName',
     choices,
-  };
-};
-export { templateNameQuestion };
+  }
+}
+export { templateNameQuestion }

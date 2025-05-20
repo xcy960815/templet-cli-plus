@@ -1,17 +1,17 @@
 interface DownloadTypeQuestion {
-  type: 'list';
-  name: 'downloadType';
-  message: '请选择下载方式';
+  type: 'list'
+  name: 'downloadType'
+  message: '请选择下载方式'
   choices: Array<
     | {
-        name: string;
-        value: string;
+        name: string
+        value: string
       }
     | {
-        name: string;
-        value: string;
+        name: string
+        value: string
       }
-  >;
+  >
 }
 
 /**
@@ -34,5 +34,5 @@ export const downloadTypeQuestion = function (): DownloadTypeQuestion {
         value: 'git',
       },
     ],
-  };
-};
+  }
+}

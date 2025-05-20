@@ -1,6 +1,6 @@
-import execa from 'execa';
-import { readLocalPackageJson } from '../common/read-local-packagejson';
-const { name } = readLocalPackageJson(['name']);
+import execa from 'execa'
+import { readLocalPackageJson } from '../common/read-local-packagejson'
+const { name } = readLocalPackageJson(['name'])
 
 /**
  * @desc 将依赖包更新到指定的版本号
@@ -15,6 +15,6 @@ export const updateCliVersion = async function (_latestVersion: string): Promise
     {
       shell: true,
       stdio: 'inherit',
-    },
-  );
-};
+    }
+  )
+}

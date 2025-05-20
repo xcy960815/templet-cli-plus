@@ -1,7 +1,7 @@
 interface IDescriptionQuestion {
-  type: 'input';
-  name: 'description';
-  message: '请输入项目描述';
+  type: 'input'
+  name: 'description'
+  message: '请输入项目描述'
 }
 
 /**
@@ -13,7 +13,7 @@ const descriptionQuestion = function (): IDescriptionQuestion {
     type: 'input',
     name: 'description',
     message: '请输入项目描述',
-  };
-};
+  }
+}
 
-export { descriptionQuestion };
+export { descriptionQuestion }
