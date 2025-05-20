@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "NODE_ENV=development ENV=daily rollup -c -w",
     "link": "npm link && npm link templet-cli-plus",
-    "build": "NODE_ENV=production ENV=prod rollup -c"
+    "build": "NODE_ENV=production ENV=prod rollup -c",
+    "prepare": "husky install"
   },
   "bin": {
     "temp": "./bin/index.cjs.js"
@@ -36,9 +37,9 @@
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^10.0.0",
     "@rollup/plugin-replace": "^5.0.2",
-    "husky": "^1.3.1",
-    "prettier": "^2.8.7",
-    "pretty-quick": "^1.8.0",
+    "husky": "^8.0.3",
+    "prettier": "^3.2.5",
+    "pretty-quick": "^4.0.0",
     "rollup": "^2.33.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-delete": "^2.0.0",
@@ -53,12 +54,6 @@
   },
   "volta": {
     "node": "14.21.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged",
-      "commit-msg": "vcm"
-    }
   },
   "peerDependencies": {
     "chalk": "^4.1.2",
