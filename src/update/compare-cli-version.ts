@@ -1,5 +1,6 @@
 import semver from 'semver'
 import chalk from 'chalk'
+import ora from 'ora'
 import { initQuestions } from '../questions/init-questions'
 import { readLocalPackageJson } from '../common/read-local-packagejson'
 const { name, version: currentVersion } = readLocalPackageJson(['name', 'version'])
@@ -22,6 +23,6 @@ export const compareCliVersion = async (latestVersion: string): Promise<string |
       console.log(chalk.red('已放弃版本更新'))
     }
   } else {
-    console.log(chalk.green('✔ 🎉 脚手架已经是最新版本\n'))
+    ora().succeed(chalk.green('🎉 脚手架已经是最新版本'))
   }
 }

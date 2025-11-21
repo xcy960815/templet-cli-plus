@@ -63,7 +63,10 @@ function getTextWidth(text: string, font: number = 1): number {
  */
 export const printAsTable = async function (
   tableBody: Record<string, string>,
-  tableHeader: Array<string>
+  tableHeader: Array<string>,
+  options?: {
+    footerMessage?: string
+  }
 ): Promise<() => void> {
   let lastTableString = ''
 
@@ -118,9 +121,12 @@ export const printAsTable = async function (
     }
 
     const tableString = table.toString()
-    if (tableString !== lastTableString) {
-      lastTableString = tableString
-      slog.stdout(tableString)
+    const finalString = options?.footerMessage
+      ? `${tableString}\n${options.footerMessage}`
+      : tableString
+    if (finalString !== lastTableString) {
+      lastTableString = finalString
+      slog.stdout(finalString)
     }
   }
 

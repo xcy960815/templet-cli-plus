@@ -88,7 +88,29 @@ program
     Object.keys(templateList).forEach((key) => {
       tableBody[key] = templateList[key].desc
     })
-    printAsTable(tableBody, tableHeader)
+    const isInteractive = process.stdout.isTTY && process.stdin.isTTY
+    const cleanupTable = await printAsTable(tableBody, tableHeader)
+    if (isInteractive) {
+      await new Promise<void>((resolve) => {
+        const handleExit = (chunk: Buffer) => {
+          const key = chunk.toString().trim().toLowerCase()
+          if (key === 'q' || key === '') {
+            process.stdin.off('data', handleExit)
+            if (process.stdin.isTTY) {
+              process.stdin.setRawMode(false)
+              process.stdin.pause()
+            }
+            cleanupTable()
+            resolve()
+          }
+        }
+        process.stdin.setRawMode(true)
+        process.stdin.resume()
+        process.stdin.on('data', handleExit)
+      })
+    } else {
+      cleanupTable()
+    }
   })
 
 /**
