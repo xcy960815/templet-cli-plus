@@ -2,7 +2,8 @@ import chalk from 'chalk'
 import { readLocalPackageJson } from '../common/read-local-packagejson'
 import { printAsTable } from '@/common/print-as-table'
 const { bin } = readLocalPackageJson(['bin'])
-const cliShell = Object.keys(bin || {})[0]
+const cliShell =
+  typeof bin === 'string' ? bin : bin && typeof bin === 'object' ? Object.keys(bin)[0] : 'templet'
 
 /**
  * @desc 打印帮助信息

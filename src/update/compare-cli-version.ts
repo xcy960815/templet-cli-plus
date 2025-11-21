@@ -22,6 +22,6 @@ export const compareCliVersion = async (latestVersion: string): Promise<string |
       console.log(chalk.red('已放弃版本更新'))
     }
   } else {
-    console.log(chalk.green('脚手架已经是最新版本'))
+    console.log(chalk.green('✔ 🎉 脚手架已经是最新版本\n'))
   }
 }

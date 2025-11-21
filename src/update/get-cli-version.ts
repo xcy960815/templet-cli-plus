@@ -3,7 +3,10 @@ import chalk from 'chalk'
 import { promisify } from 'util'
 import { readLocalPackageJson } from '@/common/read-local-packagejson'
 import request from 'request'
+
 const { name } = readLocalPackageJson(['name'])
+const REGISTRY_BASE_URL = 'https://registry.npmmirror.com'
+const REQUEST_TIMEOUT = 3000
 const requestPromise = promisify(request)
 
 interface IJsonResult {
@@ -40,19 +43,24 @@ interface IResult {
  * @return {Promise<void>}
  */
 export const getCliVersion = async (): Promise<IResult> => {
-  const spinner = ora(chalk.green('正在检查脚手架版本\n')).start()
-  const result = await requestPromise({
-    url: `https://registry.npmmirror.com/${name}`,
-    timeout: 3000,
-  }).catch((error) => {
-    // 当错误类型不为超时错误时，打印错误信息
-    if (error.code !== 'ETIMEDOUT') {
-      spinner.fail(chalk.red('脚手架版本检查失败请重试一次\n'))
-    } else {
-      spinner.fail(chalk.red('脚手架版本检查超时\n'))
-    }
+  const spinner = ora(chalk.green('正在检查脚手架版本\n'))
+  spinner.start()
+
+  try {
+    const result = await requestPromise({
+      url: `${REGISTRY_BASE_URL}/${name}`,
+      timeout: REQUEST_TIMEOUT,
+      headers: {
+        'user-agent': `${name} cli`,
+        accept: 'application/vnd.npm.install-v1+json',
+      },
+    })
+    spinner.succeed(`${chalk.green('✔ 🎉 脚手架版本检查完成')}\n`)
+    return result
+  } catch (error: any) {
+    const isTimeout = error?.code === 'ETIMEDOUT'
+    const failMessage = isTimeout ? '脚手架版本检查超时\n' : '脚手架版本检查失败请重试一次\n'
+    spinner.fail(chalk.red(failMessage))
     process.exit(1)
-  })
-  spinner.succeed(`${chalk.green('🎉 手架版本检查完成')}\n`)
-  return result
+  }
 }

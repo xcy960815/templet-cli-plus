@@ -9,6 +9,7 @@ interface PackageJson {
   name: string
   version: string
   description?: string
+  bin?: string | Record<string, string>
   engines?: {
     node?: string
     [key: string]: string | undefined
@@ -23,7 +24,7 @@ interface PackageJson {
  */
 function readPackageJson(): PackageJson {
   try {
-    const packagePath = join(__dirname, '../../package.json')
+    const packagePath = join(__dirname, '../package.json')
     const content = readFileSync(packagePath, 'utf-8')
     return JSON.parse(content) as PackageJson
   } catch (error) {

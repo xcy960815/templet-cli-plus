@@ -35,33 +35,82 @@ export const getTemplateList = async function (
   } catch (error) {}
 
   // 缓存已过期或文件不存在，重新请求接口获取最新数据
+  const requestTargets = [
+    {
+      label: 'raw.staticdn.net',
+      url: 'https://raw.staticdn.net/xcy960815/template-list/master/template-list.json',
+    },
+    {
+      label: 'raw.githubusercontent.com',
+      url: 'https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json',
+    },
+    {
+      label: 'cdn.jsdelivr.net',
+      url: 'https://cdn.jsdelivr.net/gh/xcy960815/template-list/template-list.json',
+    },
+  ]
+
   const promisifyRequest = promisify(request)
-  const result = await promisifyRequest({
-    // 源地址 /https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json
+  let parsedBody: Record<string, ITemplate> | undefined
+  let lastError: Error | undefined
 
-    // 加速地址
-    // https://raw.staticdn.netxcy960815/template-list/master/template-list.json 生效
+  for (const target of requestTargets) {
+    const response = await promisifyRequest({
+      url: target.url,
+      timeout: 20000,
+      headers: {
+        'User-Agent': 'templet-cli-plus',
+        Accept: 'application/json',
+      },
+    }).catch((error) => {
+      lastError = error
+      if (output) {
+        spinner.warn(
+          chalk.yellow(`模板相关配置查询失败：${target.label} 无法连接，尝试切换备用源...`)
+        )
+      }
+      return null
+    })
 
-    // https://ghproxy.com/https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json 未加速 返回 ECONNRESET
+    if (!response) continue
 
-    // https://github3.mk-proxy.ml/-----https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json
+    const body =
+      typeof response.body === 'string'
+        ? response.body
+        : Buffer.isBuffer(response.body)
+          ? response.body.toString('utf-8')
+          : ''
 
-    // https://gh.api.99988866.xyz/https://raw.githubusercontent.com/xcy960815/template-list/master/template-list.json
+    try {
+      parsedBody = JSON.parse(body)
+      output &&
+        spinner.succeed(
+          chalk.greenBright(`🎉 模板相关配置查询完成（来自 ${target.label} 的最新数据）\n`)
+        )
+      break
+    } catch (error) {
+      lastError = error as Error
+      if (output) {
+        spinner.warn(
+          chalk.yellow(
+            `模板相关配置解析失败：${target.label} 返回了非 JSON 内容，正在尝试备用源...`
+          )
+        )
+      }
+      const preview = typeof body === 'string' ? body.slice(0, 200) : ''
+      preview && console.error(chalk.gray(`[${target.label} 响应预览]\n${preview}`))
+    }
+  }
 
-    url: 'https://raw.staticdn.net/xcy960815/template-list/master/template-list.json',
-    timeout: 20000,
-  }).catch((error) => {
-    if (error.code === 'ETIMEDOUT') {
-      output && spinner.fail(chalk.redBright('模板相关配置查询超时，请稍后再试'))
-    } else {
-      output && spinner.fail(chalk.redBright('模板相关配置查询失败，请稍后再试'))
+  if (!parsedBody) {
+    output && spinner.fail(chalk.redBright('模板相关配置查询失败，所有备用源均不可用，请稍后再试'))
+    if (lastError) {
+      console.error(chalk.gray(`[模板查询报错详情] ${lastError.message || lastError}`))
     }
     process.exit(1)
-  })
+  }
 
-  output && spinner.succeed(chalk.greenBright('🎉 模板相关配置查询完成（请求最新数据）\n'))
+  fs.writeFileSync(templateListFilePath, JSON.stringify(parsedBody, null, 2))
 
-  fs.writeFileSync(templateListFilePath, result.body)
-
-  return JSON.parse(result.body)
+  return parsedBody
 }
