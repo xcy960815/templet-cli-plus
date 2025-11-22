@@ -5,6 +5,23 @@ import { printAsTable } from '@/common/print-as-table'
 import { getTemplateList } from '@/list/get-template-list'
 
 /**
+ * 常量定义
+ */
+const GHPROXY_BASE_URL = 'https://ghproxy.com/'
+const DEFAULT_BRANCH = 'master'
+const BRANCH_HASH_PATTERN = /#master$/
+
+/**
+ * Spinner 消息
+ */
+const SPINNER_MESSAGES = {
+  FETCHING: chalk.cyan('正在获取模板列表...'),
+  DOWNLOADING: chalk.cyan('正在下载模板...'),
+  SUCCESS: chalk.green('模板下载完成！\n'),
+  FAILED: chalk.red('模板下载失败'),
+} as const
+
+/**
  * 模板配置接口
  */
 interface TemplateConfig {
@@ -13,11 +30,9 @@ interface TemplateConfig {
 }
 
 /**
- * 模板列表接口
+ * 模板列表类型
  */
-interface TemplateList {
-  [key: string]: TemplateConfig
-}
+type TemplateList = Record<string, TemplateConfig>
 
 /**
  * 自定义错误类，用于模板下载相关的错误
@@ -30,7 +45,23 @@ class TemplateError extends Error {
   ) {
     super(message)
     this.name = 'TemplateError'
+    // 确保错误堆栈正确
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TemplateError)
+    }
   }
+}
+
+/**
+ * 处理下载 URL，添加代理并移除分支哈希
+ * @param downloadUrl - 原始下载 URL
+ * @returns 处理后的下载 URL
+ */
+function processDownloadUrl(downloadUrl: string): string {
+  // 移除 URL 末尾的分支哈希（如 #master）
+  const cleanedUrl = downloadUrl.replace(BRANCH_HASH_PATTERN, '')
+  // 添加 ghproxy 代理前缀
+  return `${GHPROXY_BASE_URL}${cleanedUrl}`
 }
 
 /**
@@ -40,14 +71,13 @@ class TemplateError extends Error {
  */
 function showAvailableTemplates(templateList: TemplateList, invalidTemplate: string): void {
   console.log(chalk.red(`\n模板 "${invalidTemplate}" 不存在，请从以下模板中选择：\n`))
+
   const tableHeader = [chalk.cyan('模板名称'), chalk.blue('模板描述')]
-  const tableBody = Object.entries(templateList).reduce(
-    (acc, [key, value]) => {
-      acc[key] = value.desc
-      return acc
-    },
-    {} as Record<string, string>
-  )
+  const tableBody: Record<string, string> = {}
+
+  for (const [key, value] of Object.entries(templateList)) {
+    tableBody[key] = value.desc
+  }
 
   printAsTable(tableBody, tableHeader)
 }
@@ -55,44 +85,44 @@ function showAvailableTemplates(templateList: TemplateList, invalidTemplate: str
 /**
  * 下载 GitHub 模板
  * @param templateName - 模板名称
- * @param projectName - 项目名称
+ * @param projectName - 项目名称（目标文件夹名称）
  * @throws {TemplateError} 当模板不存在或下载失败时抛出错误
  */
 export async function downloadTemplate(templateName: string, projectName: string): Promise<void> {
-  const spinner = ora(chalk.cyan('正在获取模板列表...')).start()
+  const spinner = ora(SPINNER_MESSAGES.FETCHING).start()
 
   try {
+    // 获取模板列表
     const templateList = await getTemplateList()
-    const templateOptions = templateList[templateName]
+    const templateConfig = templateList[templateName]
 
-    if (!templateOptions) {
+    // 验证模板是否存在
+    if (!templateConfig) {
       spinner.stop()
       showAvailableTemplates(templateList, templateName)
       throw new TemplateError('模板不存在', templateName)
     }
 
-    spinner.text = chalk.cyan('正在下载模板...')
-
-    // 使用 ghproxy.com 代理 github.com
-    const downloadUrl = `https://ghproxy.com/${templateOptions.downloadUrl.replace('#master', '')}`
+    // 更新 spinner 状态并开始下载
+    spinner.text = SPINNER_MESSAGES.DOWNLOADING
+    const downloadUrl = processDownloadUrl(templateConfig.downloadUrl)
 
     await gitclone(downloadUrl, projectName, {
-      checkout: 'master',
+      checkout: DEFAULT_BRANCH,
       shallow: true,
     })
 
-    spinner.succeed(chalk.green('模板下载完成！\n'))
+    spinner.succeed(SPINNER_MESSAGES.SUCCESS)
   } catch (error) {
-    spinner.fail(chalk.red('模板下载失败'))
+    spinner.fail(SPINNER_MESSAGES.FAILED)
 
+    // 如果是自定义错误，直接抛出
     if (error instanceof TemplateError) {
       throw error
     }
 
-    throw new TemplateError(
-      '下载模板时发生错误',
-      templateName,
-      error instanceof Error ? error : new Error(String(error))
-    )
+    // 包装其他错误
+    const originalError = error instanceof Error ? error : new Error(String(error))
+    throw new TemplateError('下载模板时发生错误', templateName, originalError)
   }
 }

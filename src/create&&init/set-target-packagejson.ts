@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import ora from 'ora'
 import { readLocalPackageJson } from '../common/read-local-packagejson'
-import { QuestionsMap } from '@/questions/init-questions'
+import { QuestionKey } from '@/questions/init-questions'
 interface ITargetPackageJson {
   name: string
   version: string
@@ -78,7 +78,7 @@ interface ITargetPackageJson {
  * @returns {void}
  */
 
-type IAnswers = { [key in keyof QuestionsMap]: string }
+type IAnswers = Partial<Record<QuestionKey, string>>
 
 export const setTargetPackageJson = (projectName: string, answers: IAnswers) => {
   const spinner = ora(chalk.greenBright('===> 开始修改package.json文件...')).start()

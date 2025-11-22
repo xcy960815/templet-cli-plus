@@ -1,16 +1,20 @@
 import chalk from 'chalk'
 
-interface IDeleteFolderQuestion {
+/**
+ * 问题配置接口
+ */
+interface QuestionConfig {
   type: 'list'
   name: 'deleteFolder'
   message: string
   choices: Array<{ name: string; value: string }>
 }
+
 /**
- * @desc 删除文件夹问题
- * @returns {IDeleteFolderQuestion}
+ * 创建删除文件夹问题配置
+ * @returns 问题配置对象
  */
-const deleteFolderQuestion = function (): IDeleteFolderQuestion {
+export function deleteFolderQuestion(): QuestionConfig {
   return {
     type: 'list',
     name: 'deleteFolder',
@@ -22,5 +26,3 @@ const deleteFolderQuestion = function (): IDeleteFolderQuestion {
     ],
   }
 }
-
-export { deleteFolderQuestion }

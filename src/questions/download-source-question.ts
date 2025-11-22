@@ -1,29 +1,24 @@
-interface DownloadSourceQuestion {
+import chalk from 'chalk'
+
+/**
+ * 问题配置接口
+ */
+interface QuestionConfig {
   type: 'list'
   name: 'downloadSource'
-  message: '请选择下载源'
-  choices: Array<
-    | {
-        name: string
-        value: string
-      }
-    | {
-        name: string
-        value: string
-      }
-  >
+  message: string
+  choices: Array<{ name: string; value: string }>
 }
 
 /**
- * @desc 下载源问题 单选框
- * @returns {DownloadSourceQuestion}
+ * 创建下载源选择问题配置
+ * @returns 问题配置对象
  */
-
-const downloadSourceQuestion = function (): DownloadSourceQuestion {
+export function downloadSourceQuestion(): QuestionConfig {
   return {
     type: 'list',
     name: 'downloadSource',
-    message: '请选择下载源',
+    message: chalk.cyan('请选择下载源:'),
     choices: [
       {
         name: 'github（代码最新，依赖宿主网络环境）',
@@ -36,5 +31,3 @@ const downloadSourceQuestion = function (): DownloadSourceQuestion {
     ],
   }
 }
-
-export { downloadSourceQuestion }

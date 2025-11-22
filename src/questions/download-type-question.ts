@@ -1,29 +1,24 @@
-interface DownloadTypeQuestion {
+import chalk from 'chalk'
+
+/**
+ * 问题配置接口
+ */
+interface QuestionConfig {
   type: 'list'
   name: 'downloadType'
-  message: '请选择下载方式'
-  choices: Array<
-    | {
-        name: string
-        value: string
-      }
-    | {
-        name: string
-        value: string
-      }
-  >
+  message: string
+  choices: Array<{ name: string; value: string }>
 }
 
 /**
- * @desc 下载方式问题 单选框
- * @returns {DownloadTypeQuestion}
+ * 创建下载方式选择问题配置
+ * @returns 问题配置对象
  */
-
-export const downloadTypeQuestion = function (): DownloadTypeQuestion {
+export function downloadTypeQuestion(): QuestionConfig {
   return {
     type: 'list',
     name: 'downloadType',
-    message: '请选择下载方式',
+    message: chalk.cyan('请选择下载方式:'),
     choices: [
       {
         name: 'zip',

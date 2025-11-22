@@ -3,29 +3,46 @@ import path from 'path'
 import chalk from 'chalk'
 
 /**
- * @desc 给当前项目安装依赖包
- * @param {string} templateName 模板名称
- * @param {string} projectName 项目名称
- * @returns {Promise<void>}
+ * NPM 镜像源地址（淘宝镜像）
  */
-export const installDependencies = async (projectName: string): Promise<void> => {
-  // 获取当前项目的绝对路径
+const NPM_REGISTRY = 'https://registry.npm.taobao.org'
+
+/**
+ * 控制台消息
+ */
+const MESSAGES = {
+  INSTALL_START: (text: string) => `⌛️ ${chalk.greenBright(text)}`,
+  INSTALL_SUCCESS: (text: string) => chalk.greenBright(text),
+  INSTALL_ERROR: (text: string) => chalk.redBright(text),
+  CD_COMMAND: (command: string, projectName: string) =>
+    `   ${chalk.redBright(command)} ${chalk.yellowBright(projectName)}`,
+  DEV_COMMAND: (command: string) => `   ${chalk.greenBright(command)}`,
+} as const
+
+/**
+ * 为项目安装依赖包
+ * 使用淘宝 npm 镜像源进行安装，安装完成后输出后续操作提示
+ *
+ * @param projectName - 项目名称（文件夹名称）
+ * @returns Promise<void>
+ */
+export async function installDependencies(projectName: string): Promise<void> {
   const projectPath = path.resolve(process.cwd(), projectName)
-  console.info(`⌛️ ${chalk.greenBright('开始安装依赖包')}`)
+
+  console.info(MESSAGES.INSTALL_START('开始安装依赖包'))
+
   try {
-    // 一次性切换 npm 源并安装依赖包
-    await execa(`npm`, ['install', '--registry', 'https://registry.npm.taobao.org'], {
+    await execa('npm', ['install', '--registry', NPM_REGISTRY], {
       shell: true,
       stdio: 'inherit',
       cwd: projectPath,
     })
 
-    console.info(chalk.greenBright('🎉依赖包安装完成\n'))
-    // 输出 cd 指令
-    console.info(`   ${chalk.redBright('cd')} ${chalk.yellowBright(projectName)}\n`)
-    // 输出 启动 指令
-    console.info(`   ${chalk.greenBright('npm run dev')}`)
+    console.info(`${MESSAGES.INSTALL_SUCCESS('🎉依赖包安装完成')}\n`)
+    console.info(`${MESSAGES.CD_COMMAND('cd', projectName)}\n`)
+    console.info(MESSAGES.DEV_COMMAND('npm run dev'))
   } catch (error) {
-    console.error(chalk.redBright('   ❌ 安装依赖包失败，请检查网络或手动安装依赖包'))
+    console.error(MESSAGES.INSTALL_ERROR('   ❌ 安装依赖包失败，请检查网络或手动安装依赖包'))
+    // 可以选择是否重新抛出错误，这里保持静默失败以允许用户手动安装
   }
 }

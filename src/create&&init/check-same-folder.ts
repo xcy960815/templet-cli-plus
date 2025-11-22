@@ -1,20 +1,44 @@
-import { readdirSync, existsSync } from 'fs'
-import { join } from 'path'
+import { readdirSync } from 'fs'
 import chalk from 'chalk'
+
+/**
+ * 常量定义
+ */
+const GIT_SUFFIX = /\.git$/
+const URL_PATTERN = /^https?:\/\//
+
+/**
+ * 警告消息模板
+ */
+const WARNING_MESSAGE = (folderName: string) =>
+  `\n警告: 当前目录下已存在名为 "${folderName}" 的文件夹\n` +
+  '这可能会导致文件冲突。建议：\n' +
+  '1. 使用不同的项目名称\n' +
+  '2. 删除或重命名现有文件夹\n' +
+  '3. 在其他目录下创建项目\n'
 
 /**
  * 从 URL 中提取项目名称
  * @param url - GitHub URL 或项目名称
- * @returns 提取的项目名称
+ * @returns 提取的项目名称，如果无法提取则返回空字符串
  */
 function extractProjectName(url: string): string {
-  if (!url.includes('http')) {
-    return url
+  if (!url || typeof url !== 'string') {
+    return ''
   }
 
-  const parts = url.split('/')
-  const lastPart = parts[parts.length - 1]
-  return lastPart.replace(/\.git$/, '')
+  const trimmed = url.trim()
+
+  // 如果不是 URL，直接返回
+  if (!URL_PATTERN.test(trimmed)) {
+    return trimmed
+  }
+
+  // 从 URL 中提取项目名称
+  const parts = trimmed.split('/').filter(Boolean)
+  const lastPart = parts[parts.length - 1] || ''
+
+  return lastPart.replace(GIT_SUFFIX, '')
 }
 
 /**
@@ -32,24 +56,11 @@ export async function checkSameFolder(projectName: string): Promise<boolean> {
     }
 
     const currentDir = process.cwd()
-
-    if (!existsSync(currentDir)) {
-      throw new Error(`目录不存在: ${currentDir}`)
-    }
-
     const folderList = readdirSync(currentDir)
-    const hasSameFolder = folderList.some((name) => name === extractedName)
+    const hasSameFolder = folderList.includes(extractedName)
 
     if (hasSameFolder) {
-      console.warn(
-        chalk.yellow(
-          `\n警告: 当前目录下已存在名为 "${extractedName}" 的文件夹\n` +
-            '这可能会导致文件冲突。建议：\n' +
-            '1. 使用不同的项目名称\n' +
-            '2. 删除或重命名现有文件夹\n' +
-            '3. 在其他目录下创建项目\n'
-        )
-      )
+      console.warn(chalk.yellow(WARNING_MESSAGE(extractedName)))
     }
 
     return hasSameFolder
