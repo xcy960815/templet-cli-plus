@@ -1,4 +1,5 @@
 import slog from 'single-line-log'
+import chalk from 'chalk'
 
 /**
  * 进度条配置选项
@@ -83,6 +84,29 @@ class ProgressBar {
   }
 
   /**
+   * 根据百分比获取对应的背景色
+   * @param {number} percent - 进度百分比（0-1 之间的浮点数）
+   * @returns {string} 带背景色的字符串
+   */
+  private getBackgroundColor(percent: number): (text: string) => string {
+    const percentValue = percent * 100
+
+    if (percentValue < 30) {
+      // 0-30%: 红色背景
+      return chalk.bgRed
+    } else if (percentValue < 60) {
+      // 30-60%: 黄色背景
+      return chalk.bgYellow
+    } else if (percentValue < 90) {
+      // 60-90%: 蓝色背景
+      return chalk.bgBlue
+    } else {
+      // 90-100%: 绿色背景
+      return chalk.bgGreen
+    }
+  }
+
+  /**
    * 渲染进度条
    * 根据已完成数量和总数量计算并显示进度条，包括百分比和进度条可视化
    * @param {RenderOptions} options - 渲染参数
@@ -108,11 +132,15 @@ class ProgressBar {
     const percentText = (100 * percent).toFixed(2)
 
     // 构建进度条
-    const cell = this.filledChar.repeat(cellNum)
+    const filledCells = this.filledChar.repeat(cellNum)
     const empty = this.emptyChar.repeat(this.length - cellNum)
 
+    // 根据百分比获取背景色并应用到填充部分
+    const getBgColor = this.getBackgroundColor(percent)
+    const coloredCell = filledCells ? getBgColor(filledCells) : filledCells
+
     // 构建输出文本
-    const cmdText = `${this.description}: ${percentText}% ${cell}${empty} ${Math.floor(completed)}/${Math.floor(total)}`
+    const cmdText = `${this.description}: ${percentText}% ${coloredCell}${empty} ${Math.floor(completed)}/${Math.floor(total)}`
 
     slog.stdout(cmdText)
   }

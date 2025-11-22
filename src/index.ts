@@ -1,6 +1,7 @@
 // 第三方库
 import chalk from 'chalk'
 import { Command } from 'commander'
+import ora from 'ora'
 
 // 内部模块 - 通用工具
 import { checkNodeVersion } from '@/common/check-node-version'
@@ -112,8 +113,8 @@ program
         )
         await initializeProject(templateName, projectName, answers)
       } catch (error) {
-        const message = error instanceof Error ? error.message : '未知错误'
-        console.error(chalk.redBright(`❌ 创建项目失败: ${message}`))
+        // const message = error instanceof Error ? error.message : '未知错误'
+        // console.error(chalk.redBright(`❌ 创建项目失败: ${message}`))
         process.exit(1)
       }
     })
@@ -137,8 +138,7 @@ program
         ])
         await initializeProject(answers.templateName, answers.projectName, answers)
       } catch (error) {
-        const message = error instanceof Error ? error.message : '未知错误'
-        console.error(chalk.redBright(`❌ 初始化项目失败: ${message}`))
+        // const message = error instanceof Error ? error.message : '未知错误'
         process.exit(1)
       }
     })
