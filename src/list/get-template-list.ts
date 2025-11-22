@@ -20,10 +20,28 @@ type TemplateList = Record<string, Template>
 
 // 常量配置
 const CACHE_FILE_NAME = 'template-list.json'
+/**
+ * 请求超时时间
+ * @type {number} 请求超时时间（毫秒）
+ */
 const REQUEST_TIMEOUT = 20000
-const DEV_CACHE_TIME = 60 * 1000 // 开发环境缓存有效期：1分钟
-const PROD_CACHE_TIME = 24 * 60 * 60 * 1000 // 生产环境缓存有效期：1天
 
+/**
+ * 开发环境缓存有效期
+ * @type {number} 开发环境缓存有效期（毫秒）
+ */
+const DEV_CACHE_TIME = 60 * 1000
+
+/**
+ * 生产环境缓存有效期
+ * @type {number} 生产环境缓存有效期（毫秒）
+ */
+const PROD_CACHE_TIME = 10 * 60 * 1000
+
+/**
+ * 请求目标列表
+ * @type {RequestTarget[]} 请求目标列表
+ */
 const REQUEST_TARGETS: RequestTarget[] = [
   {
     label: 'raw.staticdn.net',
@@ -51,7 +69,7 @@ const getCacheFilePath = (): string => {
 /**
  * 获取缓存有效期时间
  * 根据环境变量判断是开发环境还是生产环境，返回相应的缓存时间
- * @returns {number} 缓存有效期时间（毫秒），开发环境为 1 分钟，生产环境为 1 天
+ * @returns {number} 缓存有效期时间（毫秒），开发环境为 1 分钟，生产环境为 10 分钟
  */
 const getCacheTime = (): number => {
   const isDev = process.env.NODE_ENV === 'development'

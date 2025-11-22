@@ -1,6 +1,6 @@
 {
   "name": "templet-cli-plus",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "一个融合了多种指令的脚手架工具，都是我平时用到的，所以就把它们整合到一起了，方便自己使用，也方便大家使用。",
   "scripts": {
     "dev": "NODE_ENV=development ENV=daily rollup -c -w",
@@ -104,6 +104,7 @@
     "request": "^2.88.2",
     "semver": "^7.3.8",
     "single-line-log": "^1.1.2",
+    "table": "^6.9.0",
     "universalify": "^2.0.0",
     "word-wrap": "^1.2.3"
   }
