@@ -24,7 +24,7 @@ describe('create 命令', () => {
 
   beforeEach(() => {
     program = new Command()
-    mockExit = jest.spyOn(process, 'exit').mockImplementation((code?: number) => {
+    mockExit = jest.spyOn(process, 'exit').mockImplementation((code?: number | string | null) => {
       throw new Error(`process.exit(${code})`)
     })
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {})

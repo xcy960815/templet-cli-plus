@@ -14,7 +14,7 @@ describe('clone 命令', () => {
   let mockConsoleLog: jest.SpiedFunction<typeof console.log>
 
   beforeEach(() => {
-    mockExit = jest.spyOn(process, 'exit').mockImplementation((code?: number) => {
+    mockExit = jest.spyOn(process, 'exit').mockImplementation((code?: number | string | null) => {
       throw new Error(`process.exit(${code})`)
     })
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {})

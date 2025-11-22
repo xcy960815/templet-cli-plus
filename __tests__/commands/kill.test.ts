@@ -12,7 +12,7 @@ describe('kill 命令', () => {
   let mockConsoleError: jest.SpiedFunction<typeof console.error>
 
   beforeEach(() => {
-    mockExit = jest.spyOn(process, 'exit').mockImplementation((code?: number) => {
+    mockExit = jest.spyOn(process, 'exit').mockImplementation((code?: number | string | null) => {
       throw new Error(`process.exit(${code})`)
     })
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {})
