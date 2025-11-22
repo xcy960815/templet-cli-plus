@@ -1,4 +1,3 @@
-import pck from '../../package.json'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 

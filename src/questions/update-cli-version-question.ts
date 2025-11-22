@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { readLocalPackageJson } from '@/common/read-local-packagejson'
+import { readLocalPackageJson } from '@/common/read-local-package-json'
 
 /**
  * 问题配置接口

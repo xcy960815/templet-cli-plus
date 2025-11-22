@@ -1,7 +1,7 @@
 import ora from 'ora'
 import chalk from 'chalk'
 import { promisify } from 'util'
-import { readLocalPackageJson } from '@/common/read-local-packagejson'
+import { readLocalPackageJson } from '@/common/read-local-package-json'
 import request, { CoreOptions, UriOptions, Response } from 'request'
 
 const { name } = readLocalPackageJson(['name'])

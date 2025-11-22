@@ -1,7 +1,7 @@
 import path from 'path'
 import chalk from 'chalk'
-import { initQuestions } from '../questions/init-questions'
-import { deleteFolder } from '../common/delete-folder'
+import { initQuestions } from '@/questions/init-questions'
+import { deleteFolder } from '@/common/delete-folder'
 
 /**
  * 文件夹处理操作类型

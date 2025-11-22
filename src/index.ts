@@ -5,16 +5,16 @@ import { Command } from 'commander'
 // 内部模块 - 通用工具
 import { checkNodeVersion } from '@/common/check-node-version'
 import { printAsTable } from '@/common/print-as-table'
-import { readLocalPackageJson } from '@/common/read-local-packagejson'
+import { readLocalPackageJson } from '@/common/read-local-package-json'
 
 // 内部模块 - 功能模块
-import { cloneRepositorie } from '@/clone/clone-repositorie'
+import { cloneRepository } from '@/clone/clone-repository'
 import { printHelp } from '@/help/print-help'
 import { checkSameFolder } from '@/init/check-same-folder'
 import { downloadTemplate } from '@/init/download-template'
 import { handleSameFolder } from '@/init/handle-same-folder'
 import { installDependencies } from '@/init/install-dependencies'
-import { setTargetPackageJson } from '@/init/set-target-packagejson'
+import { setTargetPackageJson } from '@/init/set-target-package-json'
 import { getProcessByPort } from '@/kill-process/get-process-port'
 import { killProcess } from '@/kill-process/kill-process'
 import { getTemplateList } from '@/list/get-template-list'
@@ -221,7 +221,7 @@ program
           console.log(chalk.redBright('检测到当前目录下存在相同的文件名, 请更换文件名后重试'))
           process.exit(1)
         }
-        await cloneRepositorie(url)
+        await cloneRepository(url)
       } catch (error) {
         const message = error instanceof Error ? error.message : '未知错误'
         console.error(chalk.redBright(`❌ 克隆仓库失败: ${message}`))

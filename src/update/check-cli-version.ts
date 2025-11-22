@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import { getCliVersion } from './get-cli-version'
-import { compareCliVersion } from './compare-cli-version'
-import { updateCliVersion } from './update-cli-version'
+import { getCliVersion } from '@/update/get-cli-version'
+import { compareCliVersion } from '@/update/compare-cli-version'
+import { updateCliVersion } from '@/update/update-cli-version'
 
 type DistTags = { latest?: string }
 type RegistryResponse = { 'dist-tags'?: DistTags }

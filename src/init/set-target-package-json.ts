@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import fs from 'fs'
 import path from 'path'
 import ora from 'ora'
-import { readLocalPackageJson } from '../common/read-local-packagejson'
+import { readLocalPackageJson } from '@/common/read-local-package-json'
 import { QuestionKey } from '@/questions/init-questions'
 interface ITargetPackageJson {
   name: string

@@ -1,8 +1,8 @@
 import semver from 'semver'
 import chalk from 'chalk'
 import ora from 'ora'
-import { initQuestions } from '../questions/init-questions'
-import { readLocalPackageJson } from '../common/read-local-packagejson'
+import { initQuestions } from '@/questions/init-questions'
+import { readLocalPackageJson } from '@/common/read-local-package-json'
 const { name, version: currentVersion } = readLocalPackageJson(['name', 'version'])
 
 /**

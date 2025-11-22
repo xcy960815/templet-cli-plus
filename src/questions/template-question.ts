@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { getTemplateList } from '../list/get-template-list'
+import { getTemplateList } from '@/list/get-template-list'
 
 /**
  * 问题配置接口

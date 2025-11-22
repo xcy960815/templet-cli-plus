@@ -1,7 +1,7 @@
 import execa from 'execa'
 import chalk from 'chalk'
 import ora from 'ora'
-import { readLocalPackageJson } from '../common/read-local-packagejson'
+import { readLocalPackageJson } from '@/common/read-local-package-json'
 
 const { name } = readLocalPackageJson(['name'])
 const REGISTRY_URL = 'https://registry.npmmirror.com'
