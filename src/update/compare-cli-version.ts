@@ -20,7 +20,7 @@ export const compareCliVersion = async (latestVersion: string): Promise<string |
     if (answer.updateCliVersion) {
       return latestVersion
     } else {
-      console.log(chalk.red('已放弃版本更新'))
+      ora().fail(chalk.red('已放弃版本更新'))
     }
   } else {
     ora().succeed(chalk.green('🎉 脚手架已经是最新版本'))
