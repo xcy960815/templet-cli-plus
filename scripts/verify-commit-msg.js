@@ -11,13 +11,31 @@ if (!msgFile) {
 }
 
 // 读取 commit message
-const msg = fs.readFileSync(path.resolve(process.cwd(), msgFile), 'utf-8').trim()
+let msg
+try {
+  msg = fs.readFileSync(path.resolve(process.cwd(), msgFile), 'utf-8')
+} catch (error) {
+  console.error(`无法读取 commit message 文件: ${error.message}`)
+  process.exit(1)
+}
+
+// 只验证第一行（subject line），忽略 body 和 footer
+const subject = msg.split('\n')[0].trim()
+
+// 如果消息为空，直接退出
+if (!subject) {
+  console.error('\n提交信息不能为空。\n')
+  process.exit(1)
+}
 
 // commit message 格式
+// 支持 revert: 前缀
+// 支持 scope（括号内的内容，如 feat(ui):）
+// 描述部分限制 1-50 个字符
 const commitRE =
-  /^(revert: )?(feat|fix|docs|style|refactor|perf|test|build|ci|chore|types)(\(.+\))?: .{1,50}/
+  /^(revert: )?(feat|fix|docs|style|refactor|perf|test|build|ci|chore|types)(\([^)]+\))?: .{1,50}$/
 
-if (!commitRE.test(msg)) {
+if (!commitRE.test(subject)) {
   console.error(
     '\n提交信息格式错误。\n\n' +
       '正确的提交信息格式：\n\n' +
@@ -35,7 +53,8 @@ if (!commitRE.test(msg)) {
       '例如：\n' +
       '  feat: 添加用户登录功能\n' +
       '  fix: 修复用户列表分页问题\n' +
-      '  docs: 更新 README 文档\n'
+      '  docs: 更新 README 文档\n' +
+      '  feat(ui): 添加按钮组件\n'
   )
   process.exit(1)
 }

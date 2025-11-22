@@ -1,189 +1,258 @@
+// 第三方库
 import chalk from 'chalk'
-import { checkNodeVersion } from '@/common/check-node-version'
-checkNodeVersion()
 import { Command } from 'commander'
-const program = new Command()
+
+// 内部模块 - 通用工具
+import { checkNodeVersion } from '@/common/check-node-version'
+import { printAsTable } from '@/common/print-as-table'
+import { readLocalPackageJson } from '@/common/read-local-packagejson'
+
+// 内部模块 - 功能模块
+import { cloneRepositorie } from '@/clone/clone-repositorie'
+import { printHelp } from '@/help/print-help'
+import { checkSameFolder } from '@/init/check-same-folder'
+import { downloadTemplate } from '@/init/download-template'
+import { handleSameFolder } from '@/init/handle-same-folder'
+import { installDependencies } from '@/init/install-dependencies'
+import { setTargetPackageJson } from '@/init/set-target-packagejson'
+import { getProcessByPort } from '@/kill-process/get-process-port'
+import { killProcess } from '@/kill-process/kill-process'
+import { getTemplateList } from '@/list/get-template-list'
 import { initQuestions } from '@/questions/init-questions'
 import { checkReplaceUrl } from '@/replace/check-replace-url'
 import { replaceOriginAddress } from '@/replace/replace-origin-address'
-import { getProcessByPort } from '@/kill-process/get-process-port'
-import { killProcess } from '@/kill-process/kill-process'
-import { downloadTemplate } from '@/create&&init/download-template'
-import { setTargetPackageJson } from '@/create&&init/set-target-packagejson'
-import { installDependencies } from '@/create&&init/install-dependencies'
 import { checkCliVersion } from '@/update/check-cli-version'
-import { checkSameFolder } from '@/create&&init/check-same-folder'
-import { handleSameFolder } from '@/create&&init/handle-same-folder'
-import { cloneRepositorie } from '@/clone/clone-repositorie'
-import { getTemplateList } from '@/list/get-template-list'
-import { printHelp } from '@/help/print-help'
-import { printAsTable } from '@/common/print-as-table'
-import { readLocalPackageJson } from '@/common/read-local-packagejson'
+
+// 检查 Node 版本（必须在其他导入之前执行）
+checkNodeVersion()
+
+// 初始化 Commander
+const program = new Command()
 const { version } = readLocalPackageJson(['bin', 'version'])
 program.version(version!, '-v,-V,--version')
 
 /**
- * @desc 初始化指定版本的指令
+ * 命令处理函数包装器，自动检查 CLI 版本
+ */
+function withVersionCheck<T extends (...args: any[]) => Promise<any>>(handler: T): T {
+  return (async (...args: Parameters<T>) => {
+    await checkCliVersion()
+    return handler(...args)
+  }) as T
+}
+
+/**
+ * 处理项目名称冲突
+ */
+async function resolveProjectName(projectName: string): Promise<string> {
+  const hasSameFolder = await checkSameFolder(projectName)
+  return hasSameFolder ? await handleSameFolder(projectName) : projectName
+}
+
+/**
+ * 初始化项目的通用逻辑
+ */
+async function initializeProject(
+  templateName: string,
+  projectName: string,
+  answers: Record<string, string>
+): Promise<void> {
+  const newProjectName = await resolveProjectName(projectName)
+  await downloadTemplate(templateName, newProjectName)
+  await setTargetPackageJson(newProjectName, { ...answers, templateName })
+  installDependencies(newProjectName)
+}
+
+/**
+ * 处理交互式列表退出逻辑
+ */
+async function handleInteractiveExit(cleanup: () => void): Promise<void> {
+  const isInteractive = process.stdout.isTTY && process.stdin.isTTY
+
+  if (!isInteractive) {
+    cleanup()
+    process.exit(0)
+    return
+  }
+
+  await new Promise<void>((resolve) => {
+    const handleExit = (chunk: Buffer) => {
+      const key = chunk.toString().trim().toLowerCase()
+      if (key === 'q' || key === '') {
+        process.stdin.off('data', handleExit)
+        if (process.stdin.isTTY) {
+          process.stdin.setRawMode(false)
+          process.stdin.pause()
+        }
+        cleanup()
+        resolve()
+      }
+    }
+
+    process.stdin.setRawMode(true)
+    process.stdin.resume()
+    process.stdin.on('data', handleExit)
+  })
+
+  process.exit(0)
+}
+
+/**
+ * create 命令：通过指定模版创建项目
  */
 program
   .command('create <templateName> <projectName>')
   .description(chalk.yellowBright('通过指定模版创建项目'))
-  .action(async (templateName: string, projectName: string) => {
-    // 检查版本号
-    await checkCliVersion()
-    // 收集用户配置
-    const answers = await initQuestions(
-      ['projectName', 'version', 'description', 'author'],
-      projectName
-    )
-    // 检查文件名称
-    const hasSameFolder = await checkSameFolder(projectName)
-    const newProjectName = hasSameFolder ? await handleSameFolder(projectName) : projectName
-    await downloadTemplate(templateName, newProjectName)
-    await setTargetPackageJson(newProjectName, { ...answers, templateName })
-    installDependencies(newProjectName)
-  })
+  .action(
+    withVersionCheck(async (templateName: string, projectName: string) => {
+      try {
+        const answers = await initQuestions(
+          ['projectName', 'version', 'description', 'author'],
+          projectName
+        )
+        await initializeProject(templateName, projectName, answers)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '未知错误'
+        console.error(chalk.redBright(`❌ 创建项目失败: ${message}`))
+        process.exit(1)
+      }
+    })
+  )
 
 /**
- * @desc 用户自己选择版本
+ * init 命令：用户自己选择模板和配置
  */
 program
   .command('init')
   .description(chalk.greenBright('初始化模板'))
-  .action(async () => {
-    // 检查版本号
-    await checkCliVersion()
-    // 收集用户信息
-    const answers = await initQuestions([
-      'templateName',
-      'projectName',
-      'version',
-      'description',
-      'author',
-    ])
-    const hasSameFolder = await checkSameFolder(answers.projectName)
-    const newProjectName = hasSameFolder
-      ? await handleSameFolder(answers.projectName)
-      : answers.projectName
-    // 下载模板
-    await downloadTemplate(answers.templateName, newProjectName)
-    // 现在成功之后 修改package.json 内容
-    await setTargetPackageJson(newProjectName, answers)
-    // 安装依赖包
-    installDependencies(newProjectName)
-  })
+  .action(
+    withVersionCheck(async () => {
+      try {
+        const answers = await initQuestions([
+          'templateName',
+          'projectName',
+          'version',
+          'description',
+          'author',
+        ])
+        await initializeProject(answers.templateName, answers.projectName, answers)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '未知错误'
+        console.error(chalk.redBright(`❌ 初始化项目失败: ${message}`))
+        process.exit(1)
+      }
+    })
+  )
 
 /**
- * @desc 查看所有的vue版本指令
+ * list 命令：查看所有模版列表
  */
 program
   .command('list')
   .description(chalk.redBright('查看所有模版列表'))
-  .action(async () => {
-    // 检查版本号
-    await checkCliVersion()
-    const templateList = await getTemplateList(true)
-    const tableHeader = [chalk.red('  模板名称'), chalk.blue('  模板描述')]
-    const tableBody: { [key: string]: string } = {}
-    Object.keys(templateList).forEach((key) => {
-      tableBody[key] = templateList[key].desc
+  .action(
+    withVersionCheck(async () => {
+      try {
+        const templateList = await getTemplateList(true)
+        const tableHeader = [chalk.red('  模板名称'), chalk.blue('  模板描述')]
+        const tableBody: Record<string, string> = {}
+
+        Object.keys(templateList).forEach((key) => {
+          tableBody[key] = templateList[key].desc
+        })
+
+        const cleanupTable = await printAsTable(tableBody, tableHeader)
+        await handleInteractiveExit(cleanupTable)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '未知错误'
+        console.error(chalk.redBright(`❌ 获取模板列表失败: ${message}`))
+        process.exit(1)
+      }
     })
-    const isInteractive = process.stdout.isTTY && process.stdin.isTTY
-    const cleanupTable = await printAsTable(tableBody, tableHeader)
-    if (isInteractive) {
-      await new Promise<void>((resolve) => {
-        const handleExit = (chunk: Buffer) => {
-          const key = chunk.toString().trim().toLowerCase()
-          if (key === 'q' || key === '') {
-            process.stdin.off('data', handleExit)
-            if (process.stdin.isTTY) {
-              process.stdin.setRawMode(false)
-              process.stdin.pause()
-            }
-            cleanupTable()
-            resolve()
-          }
-        }
-        process.stdin.setRawMode(true)
-        process.stdin.resume()
-        process.stdin.on('data', handleExit)
-      })
-      process.exit(0)
-    } else {
-      cleanupTable()
-      process.exit(0)
-    }
-  })
+  )
 
 /**
- * @desc 替换仓库指令
+ * replace 命令：替换仓库地址
  */
 program
   .command('replace <url>')
   .description(chalk.redBright('替换仓库指令'))
-  .action(async (originAddress: string) => {
-    // 检查cli版本
-    await checkCliVersion()
-    // 检查url是否合法
-    const newOriginAddress = await checkReplaceUrl(originAddress)
-    // 执行修改地址
-    await replaceOriginAddress(newOriginAddress)
-  })
+  .action(
+    withVersionCheck(async (originAddress: string) => {
+      try {
+        const newOriginAddress = await checkReplaceUrl(originAddress)
+        await replaceOriginAddress(newOriginAddress)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '未知错误'
+        console.error(chalk.redBright(`❌ 替换仓库地址失败: ${message}`))
+        process.exit(1)
+      }
+    })
+  )
 
 /**
- * @desc kill 指令
+ * kill 命令：杀死指定端口号的进程
  */
 program
   .command('kill <port>')
   .description(chalk.blueBright('杀死指定端口号的进程'))
   .action(async (port: string) => {
-    // 获取进程id
-    const processOptions = await getProcessByPort(port)
-    // 杀死进程
-    await killProcess(processOptions, port)
+    try {
+      const processOptions = await getProcessByPort(port)
+      await killProcess(processOptions, port)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '未知错误'
+      console.error(chalk.redBright(`❌ 终止进程失败: ${message}`))
+      process.exit(1)
+    }
   })
 
 /**
- * @desc clone指令
+ * clone 命令：代理 github clone 指令
  */
 program
   .command('clone <url>')
   .description(chalk.blueBright('代理 github clone 指令'))
-  .action(async (url: string) => {
-    // 检查cli版本
-    await checkCliVersion()
-    const hasSameFolder = await checkSameFolder(url)
-    if (hasSameFolder) {
-      console.log(chalk.redBright('检测到当前目录下存在相同的文件名, 请更换文件名后重试'))
-      process.exit(1)
-    }
-    // clone 仓库
-    await cloneRepositorie(url)
-  })
+  .action(
+    withVersionCheck(async (url: string) => {
+      try {
+        const hasSameFolder = await checkSameFolder(url)
+        if (hasSameFolder) {
+          console.log(chalk.redBright('检测到当前目录下存在相同的文件名, 请更换文件名后重试'))
+          process.exit(1)
+        }
+        await cloneRepositorie(url)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '未知错误'
+        console.error(chalk.redBright(`❌ 克隆仓库失败: ${message}`))
+        process.exit(1)
+      }
+    })
+  )
+
 /**
- * @desc 脚手架更新指令
- * @returns {String}
+ * update 命令：脚手架更新指令
  */
 program
   .command('update')
   .description(chalk.blueBright('脚手架更新指令'))
-  .action(async () => {
-    // 检查版本号
-    await checkCliVersion()
-    console.log(chalk.blueBright('🎉 脚手架已经是最新版本\n'))
-  })
+  .action(
+    withVersionCheck(async () => {
+      console.log(chalk.blueBright('🎉 脚手架已经是最新版本\n'))
+    })
+  )
 
 /**
- * @desc 脚手架帮助指令
- * @returns {String}
+ * help 命令：脚手架帮助指令
  */
 program
   .command('help')
   .description(chalk.bgRed('脚手架帮助指令'))
-  .action(async () => {
-    // 检查版本号
-    await checkCliVersion()
-    printHelp()
-  })
+  .action(
+    withVersionCheck(async () => {
+      printHelp()
+    })
+  )
 
+// 解析命令行参数
 program.parse(process.argv)
