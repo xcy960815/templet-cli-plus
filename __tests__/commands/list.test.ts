@@ -37,7 +37,7 @@ describe('list 命令', () => {
     } as Record<string, Template>)
     ;(printAsTableModule.printAsTable as jest.MockedFunction<
       typeof printAsTableModule.printAsTable
-    >) = jest.fn<typeof printAsTableModule.printAsTable>().mockResolvedValue(() => {})
+    >) = jest.fn<typeof printAsTableModule.printAsTable>().mockResolvedValue(undefined)
   })
 
   afterEach(() => {
@@ -58,14 +58,12 @@ describe('list 命令', () => {
       tableBody[key] = templateList[key].desc
     })
 
-    const cleanupTable = await printAsTableModule.printAsTable(tableBody, tableHeader)
+    await printAsTableModule.printAsTable(tableBody, tableHeader)
 
     // 验证调用
     expect(checkCliVersionModule.checkCliVersion).toHaveBeenCalled()
     expect(getTemplateListModule.getTemplateList).toHaveBeenCalledWith(true)
     expect(printAsTableModule.printAsTable).toHaveBeenCalled()
-    expect(cleanupTable).toBeDefined()
-    expect(typeof cleanupTable).toBe('function')
   })
 
   it('应该正确格式化模板列表数据', async () => {

@@ -154,15 +154,13 @@ program
     withVersionCheck(async () => {
       try {
         const templateList = await getTemplateList(true)
-        const tableHeader = [chalk.red('  模板名称'), chalk.blue('  模板描述')]
+        const tableHeader = ['模板名称', '模板描述']
         const tableBody: Record<string, string> = {}
 
         Object.keys(templateList).forEach((key) => {
           tableBody[key] = templateList[key].desc
         })
-
-        const cleanupTable = await printAsTable(tableBody, tableHeader)
-        await handleInteractiveExit(cleanupTable)
+        await printAsTable(tableBody, tableHeader)
       } catch (error) {
         const message = error instanceof Error ? error.message : '未知错误'
         console.error(chalk.redBright(`❌ 获取模板列表失败: ${message}`))

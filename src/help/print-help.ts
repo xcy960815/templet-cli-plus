@@ -57,8 +57,5 @@ export async function printHelp(): Promise<void> {
   const tableHeader = [`${chalk.blueBright('  指令')}`, `${chalk.blueBright('   说明')}`]
   const tableBody = buildHelpTableData(cliShell)
 
-  const cleanup = await printAsTable(tableBody, tableHeader)
-
-  // 当进程退出时清理事件监听器
-  process.on('exit', cleanup)
+  await printAsTable(tableBody, tableHeader)
 }
