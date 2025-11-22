@@ -67,9 +67,10 @@ interface TableOptions {
 
 /**
  * 计算文本的显示宽度（考虑中文字符占双倍宽度）
- * @param text 要计算的文本
- * @param fontSize 字体大小，默认为 1
- * @returns 文本的显示宽度
+ * 使用 UTF-8 编码计算文本在终端中的实际显示宽度
+ * @param {string} text - 要计算的文本
+ * @param {number} [fontSize=1] - 字体大小，默认为 1
+ * @returns {number} 文本的显示宽度（字符数）
  */
 function getTextWidth(text: string, fontSize: number = DEFAULT_FONT_SIZE): number {
   const buffer = encoder.encode(text)
@@ -90,8 +91,9 @@ function getTextWidth(text: string, fontSize: number = DEFAULT_FONT_SIZE): numbe
 
 /**
  * 计算字符串数组中的最大文本宽度
- * @param texts 文本数组
- * @returns 最大宽度
+ * 遍历数组中的所有文本，返回显示宽度最大的值
+ * @param {string[]} texts - 文本数组
+ * @returns {number} 最大显示宽度，如果数组为空返回 0
  */
 function getMaxTextWidth(texts: string[]): number {
   if (texts.length === 0) {
@@ -103,7 +105,8 @@ function getMaxTextWidth(texts: string[]): number {
 
 /**
  * 随机选择一个 chalk 颜色方法
- * @returns chalk 颜色方法
+ * 从预定义的颜色列表中随机选择一种颜色函数
+ * @returns {(text: string) => string} chalk 颜色方法，接受文本并返回着色后的文本
  */
 function getRandomColor(): (text: string) => string {
   const colorName = CHALK_COLORS[Math.floor(Math.random() * CHALK_COLORS.length)]
@@ -112,10 +115,11 @@ function getRandomColor(): (text: string) => string {
 
 /**
  * 包装文本并应用颜色
- * @param text 要包装的文本
- * @param width 最大宽度
- * @param colorizer 颜色函数
- * @returns 包装并着色后的文本
+ * 将文本按指定宽度换行，并对每一行应用颜色
+ * @param {string} text - 要包装的文本
+ * @param {number} width - 最大宽度（字符数）
+ * @param {(text: string) => string} colorizer - 颜色函数，用于为文本着色
+ * @returns {string} 包装并着色后的文本，多行文本用换行符分隔
  */
 function wrapAndColorize(text: string, width: number, colorizer: (text: string) => string): string {
   return wordWrap(text, { width, cut: true })
@@ -126,10 +130,11 @@ function wrapAndColorize(text: string, width: number, colorizer: (text: string) 
 
 /**
  * 计算表格列宽
- * @param terminalWidth 终端宽度
- * @param nameMaxWidth 名称列的最大宽度
- * @param valueMaxWidth 值列的最大宽度
- * @returns 包含名称列和值列宽度的元组
+ * 根据终端宽度和内容宽度，按比例分配两列的宽度
+ * @param {number} terminalWidth - 终端宽度（字符数）
+ * @param {number} nameMaxWidth - 名称列的最大内容宽度
+ * @param {number} valueMaxWidth - 值列的最大内容宽度
+ * @returns {[number, number]} 包含名称列和值列宽度的元组 [nameWidth, valueWidth]
  */
 function calculateColumnWidths(
   terminalWidth: number,
@@ -154,10 +159,11 @@ function calculateColumnWidths(
 
 /**
  * 打印表格并支持终端大小变化时自动重新渲染
- * @param tableBody 表格数据（键值对）
- * @param tableHeader 表格头部
- * @param options 可选配置
- * @returns 返回一个清理函数，用于移除事件监听器
+ * 创建并显示一个格式化的表格，当终端大小改变时自动重新计算列宽并重新渲染
+ * @param {Record<string, string>} tableBody - 表格数据（键值对对象）
+ * @param {string[]} tableHeader - 表格头部数组，通常包含列名
+ * @param {TableOptions} [options] - 可选配置，如页脚消息
+ * @returns {Promise<() => void>} 返回一个清理函数，调用后移除 resize 事件监听器
  */
 export async function printAsTable(
   tableBody: Record<string, string>,

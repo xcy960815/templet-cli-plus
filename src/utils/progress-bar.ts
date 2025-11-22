@@ -35,7 +35,12 @@ class ProgressBar {
 
   /**
    * 创建进度条实例
-   * @param options - 配置选项
+   * @param {ProgressBarOptions} [options] - 配置选项
+   * @param {string} [options.description='Progress'] - 进度条描述文本
+   * @param {number} [options.barLength=25] - 进度条长度（字符数），必须大于 0
+   * @param {string} [options.filledChar='█'] - 填充字符，表示已完成部分
+   * @param {string} [options.emptyChar='░'] - 空字符，表示未完成部分
+   * @throws {Error} 当 barLength 小于 1 或 description 为空时抛出错误
    */
   constructor({
     description = 'Progress',
@@ -59,9 +64,10 @@ class ProgressBar {
 
   /**
    * 计算进度百分比
-   * @param completed - 已完成数量
-   * @param total - 总数量
-   * @returns 进度百分比（0-1）
+   * 根据已完成数量和总数量计算进度百分比，确保返回值在 0-1 之间
+   * @param {number} completed - 已完成数量
+   * @param {number} total - 总数量
+   * @returns {number} 进度百分比（0-1 之间的浮点数）
    */
   private calculatePercent(completed: number, total: number): number {
     if (total <= 0) {
@@ -78,7 +84,11 @@ class ProgressBar {
 
   /**
    * 渲染进度条
-   * @param options - 渲染参数
+   * 根据已完成数量和总数量计算并显示进度条，包括百分比和进度条可视化
+   * @param {RenderOptions} options - 渲染参数
+   * @param {number} options.completed - 已完成数量，必须是有效的数字
+   * @param {number} options.total - 总数量，必须是有效的数字且不能为负数
+   * @returns {void} 无返回值，直接输出到终端
    * @throws {Error} 当参数无效时抛出错误
    */
   render({ completed, total }: RenderOptions): void {
@@ -109,7 +119,9 @@ class ProgressBar {
 
   /**
    * 完成进度条（显示 100%）
-   * @param total - 总数量
+   * 将进度条设置为完成状态，显示 100% 进度
+   * @param {number} total - 总数量
+   * @returns {void} 无返回值
    */
   complete(total: number): void {
     this.render({ completed: total, total })
@@ -117,6 +129,8 @@ class ProgressBar {
 
   /**
    * 清除进度条
+   * 清空当前行的输出，用于隐藏进度条
+   * @returns {void} 无返回值
    */
   clear(): void {
     slog.stdout('')

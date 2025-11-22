@@ -1,7 +1,7 @@
 import semver from 'semver'
 import chalk from 'chalk'
 import execa from 'execa'
-import { readLocalPackageJson } from '@/common/read-local-packagejson'
+import { readLocalPackageJson } from '@/common/read-local-package-json'
 
 interface PackageEngines {
   node?: string
@@ -40,8 +40,9 @@ class NodeVersionError extends Error {
 
 /**
  * 获取错误消息字符串
- * @param error 错误对象
- * @returns 错误消息字符串
+ * 将未知类型的错误转换为字符串消息
+ * @param {unknown} error - 错误对象，可以是 Error 实例或其他类型
+ * @returns {string} 错误消息字符串
  */
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
@@ -63,10 +64,11 @@ async function getCurrentNodeVersion(): Promise<string> {
 
 /**
  * 格式化版本不兼容的错误消息
- * @param currentVersion 当前 Node.js 版本
- * @param requiredVersion 要求的 Node.js 版本
- * @param packageName 包名称
- * @returns 格式化后的错误消息
+ * 生成包含升级建议的详细错误信息
+ * @param {string} currentVersion - 当前 Node.js 版本
+ * @param {string} requiredVersion - 要求的 Node.js 版本范围
+ * @param {string} packageName - 包名称
+ * @returns {string} 格式化后的错误消息，包含升级指导
  */
 function formatVersionMismatchMessage(
   currentVersion: string,
@@ -94,7 +96,10 @@ function formatVersionMismatchMessage(
 
 /**
  * 检查当前 Node.js 版本是否符合要求
- * @throws {NodeVersionError} 当 Node.js 版本不兼容时抛出错误
+ * 从本地 package.json 读取 engines.node 字段，与当前 Node.js 版本进行对比
+ * @returns {Promise<void>} 无返回值
+ * @throws {NodeVersionError} 当 Node.js 版本不兼容时抛出错误并退出进程
+ * @throws {Error} 当无法获取 Node.js 版本或读取 package.json 失败时抛出错误
  */
 export async function checkNodeVersion(): Promise<void> {
   try {

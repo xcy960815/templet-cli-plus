@@ -41,6 +41,8 @@ const REQUEST_TARGETS: RequestTarget[] = [
 
 /**
  * 获取缓存文件路径
+ * 返回模板列表缓存文件的完整路径
+ * @returns {string} 缓存文件的完整路径
  */
 const getCacheFilePath = (): string => {
   return path.join(__dirname, CACHE_FILE_NAME)
@@ -48,6 +50,8 @@ const getCacheFilePath = (): string => {
 
 /**
  * 获取缓存有效期时间
+ * 根据环境变量判断是开发环境还是生产环境，返回相应的缓存时间
+ * @returns {number} 缓存有效期时间（毫秒），开发环境为 1 分钟，生产环境为 1 天
  */
 const getCacheTime = (): number => {
   const isDev = process.env.NODE_ENV === 'development'
@@ -56,6 +60,10 @@ const getCacheTime = (): number => {
 
 /**
  * 检查缓存是否有效
+ * 通过比较文件的修改时间和当前时间来判断缓存是否在有效期内
+ * @param {string} filePath - 缓存文件路径
+ * @param {number} cacheTime - 缓存有效期时间（毫秒）
+ * @returns {boolean} 如果缓存有效返回 true，否则返回 false
  */
 const isCacheValid = (filePath: string, cacheTime: number): boolean => {
   try {
@@ -69,6 +77,9 @@ const isCacheValid = (filePath: string, cacheTime: number): boolean => {
 
 /**
  * 从缓存文件读取模板列表
+ * 读取并解析 JSON 格式的缓存文件
+ * @param {string} filePath - 缓存文件路径
+ * @returns {TemplateList | null} 模板列表对象，如果读取或解析失败返回 null
  */
 const readCacheFile = (filePath: string): TemplateList | null => {
   try {
@@ -81,6 +92,9 @@ const readCacheFile = (filePath: string): TemplateList | null => {
 
 /**
  * 将响应体转换为字符串
+ * 处理不同类型的响应体（字符串或 Buffer），统一转换为字符串
+ * @param {Response} response - HTTP 响应对象
+ * @returns {string} 响应体字符串，如果无法转换则返回空字符串
  */
 const getResponseBody = (response: Response): string => {
   if (typeof response.body === 'string') {
@@ -94,6 +108,10 @@ const getResponseBody = (response: Response): string => {
 
 /**
  * 请求单个目标源
+ * 向指定的 URL 发送 HTTP 请求获取模板列表，并处理错误情况
+ * @param {RequestTarget} target - 请求目标对象，包含标签和 URL
+ * @param {ora.Ora} [spinner] - 可选的 ora spinner 实例，用于显示加载状态
+ * @returns {Promise<TemplateList | null>} 模板列表对象，如果请求或解析失败返回 null
  */
 const requestTarget = async (
   target: RequestTarget,
@@ -143,6 +161,9 @@ const requestTarget = async (
 
 /**
  * 从多个备用源请求模板列表
+ * 按顺序尝试多个备用源，直到成功获取模板列表或所有源都失败
+ * @param {ora.Ora} [spinner] - 可选的 ora spinner 实例，用于显示加载状态
+ * @returns {Promise<TemplateList | null>} 模板列表对象，如果所有源都失败返回 null
  */
 const fetchTemplateListFromSources = async (spinner?: ora.Ora): Promise<TemplateList | null> => {
   for (const target of REQUEST_TARGETS) {
@@ -161,6 +182,10 @@ const fetchTemplateListFromSources = async (spinner?: ora.Ora): Promise<Template
 
 /**
  * 保存模板列表到缓存文件
+ * 将模板列表数据序列化为 JSON 并写入缓存文件
+ * @param {string} filePath - 缓存文件路径
+ * @param {TemplateList} data - 要保存的模板列表数据
+ * @returns {void} 无返回值，写入失败时仅记录错误不影响主流程
  */
 const saveCacheFile = (filePath: string, data: TemplateList): void => {
   try {
@@ -172,10 +197,12 @@ const saveCacheFile = (filePath: string, data: TemplateList): void => {
 }
 
 /**
- * @desc 查询线上模板列表
- * @link https://bbs.huaweicloud.com/blogs/294241 加速方案
- * @param output 是否输出加载提示
- * @returns {Promise<Record<string, ITemplate>>}
+ * 查询线上模板列表
+ * 优先从本地缓存读取，如果缓存无效或不存在则从多个备用源请求最新数据
+ * @param {boolean} [output] - 是否输出加载提示，默认为 false
+ * @returns {Promise<TemplateList>} 模板列表对象，键为模板名称，值为模板信息
+ * @throws {Error} 当所有备用源都不可用时，输出错误信息并退出进程
+ * @link 加速方案 https://bbs.huaweicloud.com/blogs/294241
  */
 export const getTemplateList = async (output?: boolean): Promise<TemplateList> => {
   const spinner = output ? ora(chalk.greenBright('正在查询模板相关配置...')).start() : undefined

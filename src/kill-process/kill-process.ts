@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import execa from 'execa'
 import ora from 'ora'
 import { platform } from 'os'
-import { ProcessInfo } from './get-process-port'
+import { ProcessInfo } from '@/kill-process/get-process-port'
 
 /**
  * 操作系统平台类型
@@ -47,9 +47,10 @@ class KillProcessError extends Error {
 
 /**
  * 根据操作系统获取终止进程的命令
- * @param processId - 进程 ID
- * @param os - 操作系统平台
- * @returns 命令和参数
+ * 为不同操作系统返回相应的命令和参数来终止进程
+ * @param {string} processId - 进程 ID
+ * @param {Platform} os - 操作系统平台（darwin/linux/win32）
+ * @returns {CommandOptions} 包含命令和参数的对象
  * @throws {KillProcessError} 当操作系统不支持时抛出错误
  */
 function getKillCommand(processId: string, os: Platform): CommandOptions {
@@ -72,9 +73,10 @@ function getKillCommand(processId: string, os: Platform): CommandOptions {
 
 /**
  * 执行终止进程的命令
- * @param process - 进程信息
- * @param os - 操作系统平台
- * @returns Promise<void>
+ * 根据操作系统执行相应的 kill 命令来终止指定进程
+ * @param {ProcessInfo} process - 进程信息对象
+ * @param {Platform} os - 操作系统平台
+ * @returns {Promise<void>} 无返回值
  * @throws {KillProcessError} 当终止进程失败时抛出错误
  */
 async function executeKillCommand(process: ProcessInfo, os: Platform): Promise<void> {
@@ -94,10 +96,12 @@ async function executeKillCommand(process: ProcessInfo, os: Platform): Promise<v
 
 /**
  * 终止单个进程并更新 spinner
- * @param process - 进程信息
- * @param spinner - ora spinner 实例
- * @param os - 操作系统平台
- * @returns Promise<void>
+ * 执行终止进程操作，并在过程中更新加载提示信息
+ * @param {ProcessInfo} process - 进程信息对象
+ * @param {ora.Ora} spinner - ora spinner 实例，用于显示加载状态
+ * @param {Platform} os - 操作系统平台
+ * @returns {Promise<void>} 无返回值
+ * @throws {KillProcessError} 当终止进程失败时抛出错误
  */
 async function killSingleProcess(
   process: ProcessInfo,
@@ -118,8 +122,10 @@ async function killSingleProcess(
 
 /**
  * 终止指定端口上的进程
- * @param processes - 进程信息数组
- * @param port - 端口号
+ * 遍历进程列表，逐个终止每个进程，并显示进度提示
+ * @param {ProcessInfo[]} processes - 进程信息数组
+ * @param {string} port - 端口号
+ * @returns {Promise<void>} 无返回值
  * @throws {KillProcessError} 当终止进程失败时抛出错误
  */
 export async function killProcess(processes: ProcessInfo[], port: string): Promise<void> {
