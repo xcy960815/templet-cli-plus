@@ -108,8 +108,10 @@ program
         process.stdin.resume()
         process.stdin.on('data', handleExit)
       })
+      process.exit(0)
     } else {
       cleanupTable()
+      process.exit(0)
     }
   })
 
