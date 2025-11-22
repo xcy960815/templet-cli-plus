@@ -6,7 +6,7 @@ import path from 'path'
 import fs from 'fs'
 
 // 类型定义
-export interface ITemplate {
+export interface Template {
   desc: string
   downloadUrl: string
 }
@@ -16,7 +16,7 @@ interface RequestTarget {
   url: string
 }
 
-type TemplateList = Record<string, ITemplate>
+type TemplateList = Record<string, Template>
 
 // 常量配置
 const CACHE_FILE_NAME = 'template-list.json'

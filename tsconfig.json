@@ -11,21 +11,11 @@
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "lib": [
-      "es6",
-      "dom"
-    ],
+    "lib": ["es6", "dom"],
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     }
   },
-  "exclude": [
-    "bin",
-    "node_modules",
-  ],
-  "files": [
-    "src/index.ts",
-  ]
+  "include": ["src/**/*", "__tests__/**/*"],
+  "exclude": ["bin", "node_modules"]
 }

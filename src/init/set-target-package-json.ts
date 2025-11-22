@@ -4,7 +4,7 @@ import path from 'path'
 import ora from 'ora'
 import { readLocalPackageJson } from '@/common/read-local-package-json'
 import { QuestionKey } from '@/questions/init-questions'
-interface ITargetPackageJson {
+interface TargetPackageJson {
   name: string
   version: string
   description?: string
@@ -94,7 +94,7 @@ export const setTargetPackageJson = (projectName: string, answers: IAnswers) => 
     const targetPackageContentString = targetPackageJsonBuffer
       .toString()
       .replace(replaceTemplateNameReg, projectName)
-    const targetPackageContent: ITargetPackageJson = JSON.parse(targetPackageContentString)
+    const targetPackageContent: TargetPackageJson = JSON.parse(targetPackageContentString)
     delete targetPackageContent.homepage
     delete targetPackageContent.bugs
     Object.keys(answers).forEach((answer: string) => {
