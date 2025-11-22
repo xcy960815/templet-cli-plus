@@ -3,9 +3,10 @@
   "version": "0.0.8",
   "description": "一个融合了多种指令的脚手架工具，都是我平时用到的，所以就把它们整合到一起了，方便自己使用，也方便大家使用。",
   "scripts": {
-    "dev": "NODE_ENV=development ENV=daily rollup -c -w",
+    "preinstall": "node scripts/check-package-manager.js",
+    "dev": "node scripts/check-package-manager.js && NODE_ENV=development ENV=daily rollup -c -w",
     "cli": "node ./bin/index.cjs.js",
-    "build": "NODE_ENV=production ENV=prod rollup -c",
+    "build": "node scripts/check-package-manager.js && NODE_ENV=production ENV=prod rollup -c",
     "prepare": "husky install",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "changelog:first": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
@@ -32,8 +33,10 @@
     "url": "https://github.com/xcy960815/templet-cli-plus/issues"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=14.0.0",
+    "pnpm": ">=8.0.0"
   },
+  "packageManager": "pnpm@8.15.0",
   "files": [
     "bin/index.cjs.js",
     "README.md"

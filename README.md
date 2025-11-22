@@ -19,12 +19,20 @@
 ## 📋 系统要求
 
 - Node.js >= 14.0.0
-- npm 或 yarn
+- pnpm >= 8.0.0
 
 ## 📦 安装
 
+### 安装 pnpm（如果还没有安装）
+
 ```bash
-npm install templet-cli-plus -g
+npm install -g pnpm
+```
+
+### 安装 templet-cli-plus
+
+```bash
+pnpm install templet-cli-plus -g
 ```
 
 ## 🚀 快速开始
@@ -32,7 +40,7 @@ npm install templet-cli-plus -g
 ### 查看版本
 
 ```bash
-temp -v
+    temp -v
 # 或
 temp --version
 ```
