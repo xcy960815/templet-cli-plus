@@ -30,7 +30,7 @@ checkNodeVersion()
 // 初始化 Commander
 const program = new Command()
 const { version } = readLocalPackageJson(['bin', 'version'])
-program.version(version!, '-v,-V,--version')
+program.version(version!)
 
 /**
  * 命令处理函数包装器，自动检查 CLI 版本

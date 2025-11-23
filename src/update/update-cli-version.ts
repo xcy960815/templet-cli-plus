@@ -26,6 +26,20 @@ export const updateCliVersion = async (latestVersion: string): Promise<void> => 
   }).start()
 
   try {
+    // 先移除本地老版本
+    spinner.text = chalk.blue(`正在移除本地旧版本...`)
+    try {
+      await execa('npm', ['uninstall', '-g', name!], {
+        shell: true,
+        stdio: 'pipe', // 使用 pipe 以隐藏 npm 的详细输出，只显示 spinner
+      })
+    } catch (uninstallError) {
+      // 如果卸载失败（可能包不存在），继续执行安装
+      // 这不会影响后续的安装流程
+    }
+
+    // 安装新版本
+    spinner.text = chalk.blue(`正在安装新版本 ${latestVersion}...`)
     await execa('npm', ['install', '-g', `${name}@${latestVersion}`, '--registry', REGISTRY_URL], {
       shell: true,
       stdio: 'pipe', // 使用 pipe 以隐藏 npm 的详细输出，只显示 spinner
